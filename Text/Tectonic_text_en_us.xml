@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GameData>
+	<Language_en_US>
+		<!-- Map name and description-->
+		<Replace Tag="TXT_KEY_TECTONIC">
+			<Text>Tectonic</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_TECTONIC_HELP">
+			<Text>An extremely random world based on global tectonics.</Text>
+		</Replace>
+		<!-- Map option category -->
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_MODIFIER">
+			<Text>Size Modifier</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_ISLANDS">
+			<Text>Islands</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_PLATE_MOTION">
+			<Text>Plate Motion</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_CONTINENTS">
+			<Text>Continents</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_LAND">
+			<Text>Land</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_PLATES">
+			<Text>Plates</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_COASTAL_START">
+			<Text>Coastal Start</Text>
+		</Replace>
+		<!-- Map options -->
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_80">
+			<Text>Compressed - 80%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_85">
+			<Text>Squeezed - 85%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_90">
+			<Text>Reduced - 90%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_95">
+			<Text>Smaller - 95%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_100">
+			<Text>Normal - 100%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_105">
+			<Text>Plus - 105%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_110">
+			<Text>Extra - 110%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_115">
+			<Text>Super - 115%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_120">
+			<Text>Gigantic - 120%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_NONE">
+			<Text>None</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_FEW">
+			<Text>Few</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SLOW">
+			<Text>Slow</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_AVERAGE">
+			<Text>Average</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_FAST">
+			<Text>Fast</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_RAMMING_SPEED">
+			<Text>Ramming Speed!</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SNAKY">
+			<Text>Snaky</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_BLOCKY">
+			<Text>Blocky</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_LESS">
+			<Text>Less</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_MORE">
+			<Text>More</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_YES">
+			<Text>Yes</Text>
+		</Replace>
+	</Language_en_US>
+</GameData>

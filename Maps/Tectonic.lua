@@ -4,17 +4,19 @@ include("FractalWorld");
 include("FeatureGenerator");
 include("TerrainGenerator");
 
+local versionName = "V"; -- version 5
+local L = Locale.ConvertTextKey;
 ------------------------------------------------------------------------------
 
 function GetMapScriptInfo()
-	local world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts = GetCoreMapOptions()
+	local size_mod, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts = GetCoreMapOptions()
 	return {
-		Name = "TXT_KEY_TECTONIC",
+		Name = L("TXT_KEY_TECTONIC") .. " - " .. versionName,
 		Description = "TXT_KEY_TECTONIC_HELP",
 		IsAdvancedMap = 0,
-		IconIndex = 1,
+		IconIndex = 5,
 		SortIndex = 1,
-		CustomOptions = {world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts},
+		CustomOptions = {size_mod, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts},
 	};
 end
 
@@ -23,6 +25,22 @@ function GetCoreMapOptions()
 	higher values. Negative integers are valid. So the Core Map Options, which should 
 	always be at the top of the list, are getting negative values from -99 to -95. Note
 	that any set of options with identical SortPriority will be sorted alphabetically. ]]--
+	local size_mod = {
+		Name = "TXT_KEY_MAP_OPTION_SIZE_MODIFIER",
+		Values = {
+			"TXT_KEY_MAP_OPTION_SIZE_80",
+			"TXT_KEY_MAP_OPTION_SIZE_85",
+			"TXT_KEY_MAP_OPTION_SIZE_90",
+			"TXT_KEY_MAP_OPTION_SIZE_95",
+			"TXT_KEY_MAP_OPTION_SIZE_100",
+			"TXT_KEY_MAP_OPTION_SIZE_105",
+			"TXT_KEY_MAP_OPTION_SIZE_110",
+			"TXT_KEY_MAP_OPTION_SIZE_115",
+			"TXT_KEY_MAP_OPTION_SIZE_120",
+		},
+		DefaultValue = 5,
+		SortPriority = -99,
+	};
 	local temperature = {
 		Name = "TXT_KEY_MAP_OPTION_TEMPERATURE",
 		Values = {
@@ -70,82 +88,82 @@ function GetCoreMapOptions()
 		SortPriority = -95,
 	};
 	local islands = {
-		Name = "Islands",
+		Name = "TXT_KEY_MAP_OPTION_ISLANDS",
 		Values = {
-			"None",
-			"Few",
-			"Scattered",
-			"Abundant",
-			"Random",
+			"TXT_KEY_MAP_OPTION_NONE",
+			"TXT_KEY_MAP_OPTION_FEW",
+			"TXT_KEY_MAP_OPTION_SCATTERED",
+			"TXT_KEY_MAP_OPTION_ABUNDANT",
+			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 3,
 		SortPriority = -94,
 	};
 	local plate_motion = {
-		Name = "Plate Motion",
+		Name = "TXT_KEY_MAP_OPTION_PLATE_MOTION",
 		Values = {
-			"Slow",
-			"Average",
-			"Fast",
-			"Ramming Speed!",
-			"Random",
+			"TXT_KEY_MAP_OPTION_SLOW",
+			"TXT_KEY_MAP_OPTION_AVERAGE",
+			"TXT_KEY_MAP_OPTION_FAST",
+			"TXT_KEY_MAP_OPTION_RAMMING_SPEED",
+			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
 		SortPriority = -93,
 	};
 	local continents = {
-		Name = "Continents",
+		Name = "TXT_KEY_MAP_OPTION_CONTINENTS",
 		Values = {
-			"Snaky",
-			"Standard",
-			"Blocky",
-			"Random",
+			"TXT_KEY_MAP_OPTION_SNAKY",
+			"TXT_KEY_MAP_OPTION_STANDARD",
+			"TXT_KEY_MAP_OPTION_BLOCKY",
+			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
 		SortPriority = -92,
 	};
 	local land = {
-		Name = "Land",
+		Name = "TXT_KEY_MAP_OPTION_LAND",
 		Values = {
-			"Less",
-			"Standard",
-			"More",
-			"Random",
+			"TXT_KEY_MAP_OPTION_LESS",
+			"TXT_KEY_MAP_OPTION_STANDARD",
+			"TXT_KEY_MAP_OPTION_MORE",
+			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
 		SortPriority = -91,
 	};
 	local plates = {
-		Name = "Plates",
+		Name = "TXT_KEY_MAP_OPTION_PLATES",
 		Values = {
-			"Less",
-			"Standard",
-			"More",
-			"Random",
+			"TXT_KEY_MAP_OPTION_LESS",
+			"TXT_KEY_MAP_OPTION_STANDARD",
+			"TXT_KEY_MAP_OPTION_MORE",
+			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
 		SortPriority = -90,
 	};
 	local coastalStarts = {
-		Name = "Coastal Start Locations",
+		Name = "TXT_KEY_MAP_OPTION_COASTAL_START",
 		Values = {
-			"No",
-			"Yes",
-			"Random",
+			"TXT_KEY_MAP_OPTION_NO",
+			"TXT_KEY_MAP_OPTION_YES",
+			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
 		SortPriority = -89,
 	};
-	return world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts
+	return size_mod, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts
 end
 
 function FractalWorld:ShiftPlotTypes()
 	local stripRadius = self.stripRadius;
 	local shift_x = 0;
 
-	shift_x = self:DetermineXShift();	
+	shift_x = self:DetermineXShift();
 	print("Shift",shift_x);
-	
+
 	self:ShiftPlotTypesBy(shift_x, 0);
 end
 
@@ -159,13 +177,40 @@ local skewFactor2;
 
 function GetMapInitData(worldSize)
 	-- This function can reset map grid sizes or world wrap settings.
+	--[[	X sizes						Y sizes		]]
+	local duelX 	= 52;		local duelY		= 32;
+	local tinyX 	= 64;		local tinyY		= 40;
+	local smallX 	= 84;		local smallY	= 52;
+	local standardX	= 104;		local standardY	= 64;
+	local largeX 	= 128;		local largeY	= 80;
+	local hugeX 	= 152;		local hugeY		= 96;
+
+	local size_modMultiplier = 1;	-- Normal size - 100%
+	if (size_mod == 1) then
+		size_modMultiplier = 0.80;	-- Compressed size - 80%
+	elseif (size_mod == 2) then
+		size_modMultiplier = 0.85;	-- Squeezed size - 85%
+	elseif (size_mod == 3) then
+		size_modMultiplier = 0.90;	-- Reduced size - 90%
+	elseif (size_mod == 4) then
+		size_modMultiplier = 0.95;	-- Smaller size - 95%
+	elseif (size_mod == 6) then
+		size_modMultiplier = 1.05;	-- Plus size - 105%
+	elseif (size_mod == 7) then
+		size_modMultiplier = 1.10;	-- Extra size - 110%
+	elseif (size_mod == 8) then
+		size_modMultiplier = 1.15;	-- Super size - 115%
+	elseif (size_mod == 9) then
+		size_modMultiplier = 1.20;	-- Gigantic size - 120%
+	end
+
 	local worldsizes = {
-		[GameInfo.Worlds.WORLDSIZE_DUEL.ID] = {52, 32},
-		[GameInfo.Worlds.WORLDSIZE_TINY.ID] = {64, 40},
-		[GameInfo.Worlds.WORLDSIZE_SMALL.ID] = {84, 52},
-		[GameInfo.Worlds.WORLDSIZE_STANDARD.ID] = {104, 64},
-		[GameInfo.Worlds.WORLDSIZE_LARGE.ID] = {128, 80},
-		[GameInfo.Worlds.WORLDSIZE_HUGE.ID] = {152, 96}
+			[GameInfo.Worlds.WORLDSIZE_DUEL.ID] = {duelX * size_modMultiplier, duelY * size_modMultiplier},
+			[GameInfo.Worlds.WORLDSIZE_TINY.ID] = {tinyX * size_modMultiplier, tinyY * size_modMultiplier},
+			[GameInfo.Worlds.WORLDSIZE_SMALL.ID] = {smallX * size_modMultiplier, smallY * size_modMultiplier},
+			[GameInfo.Worlds.WORLDSIZE_STANDARD.ID] = {standardX * size_modMultiplier, standardY * size_modMultiplier},
+			[GameInfo.Worlds.WORLDSIZE_LARGE.ID] = {largeX * size_modMultiplier, largeY * size_modMultiplier},
+			[GameInfo.Worlds.WORLDSIZE_HUGE.ID] = {hugeX * size_modMultiplier, hugeY * size_modMultiplier}
 	}
 	local grid_size = worldsizes[worldSize];
 	--
@@ -175,7 +220,7 @@ function GetMapInitData(worldSize)
 		Width = grid_size[1],
 		Height = grid_size[2],
 		WrapX = true,
-	};      
+	};
      end
 end
 
@@ -187,9 +232,9 @@ function InitHeightmaps()
 	while math.pow(2,i) <= mapWidth/8 do
 		maps[i] = {}
 		numMaps = numMaps + 1;
-		
+
 		factor = math.pow(2,i);
-		
+
 		for x = 0, math.ceil(mapWidth/factor), 1 do
 			for y = 0, math.ceil(mapWidth/factor), 1 do
 				q = (y * (math.ceil(mapWidth/factor)+1)) + x;
@@ -214,14 +259,14 @@ end
 
 function GetHeightFromMap(i,x,y)
 	factor = math.pow(2,i);
-	
+
 	indexX = x/factor;
 	indexY = y/factor;
 	intX = math.floor(indexX);
 	intY = math.floor(indexY);
 	fracX = indexX - intX;
 	fracY = indexY - intY;
-	
+
 	q = (intY * (math.ceil(mapWidth/factor)+1)) + intX;
 	q2 = ((intY+1) * (math.ceil(mapWidth/factor)+1)) + intX;
 	r1 = Interpolate(maps[i][q], maps[i][q+1], fracX);
@@ -245,7 +290,7 @@ function GetHeight(x,y,n,f)
 end
 
 function FractalWorld:GeneratePlotTypes(args)
-	
+
 	skewFactor = { RandomFloat()*2+1, RandomFloat()+1, RandomFloat()+1,  RandomFloat()*6+5, RandomFloat()*3+3, RandomFloat()*2+2,  RandomFloat()*7, RandomFloat()*7, RandomFloat()*7};
 	skewFactor2 = { RandomFloat()*10+5, RandomFloat()*5+5, RandomFloat()*5+3, RandomFloat()*5+3, RandomFloat()*7, RandomFloat()*7, RandomFloat()*7, RandomFloat()*7};
 
@@ -253,19 +298,39 @@ function FractalWorld:GeneratePlotTypes(args)
 	for row in GameInfo.Worlds() do
 		WorldSizeTypes[row.Type] = row.ID;
 	end
+	local size_mod = Map.GetCustomOption(1);
+	local size_modMultiplier = 1;	-- Normal size - 100%
+	if (size_mod == 1) then
+		size_modMultiplier = 0.80;	-- Compressed size - 80%
+	elseif (size_mod == 2) then
+		size_modMultiplier = 0.85;	-- Squeezed size - 85%
+	elseif (size_mod == 3) then
+		size_modMultiplier = 0.90;	-- Reduced size - 90%
+	elseif (size_mod == 4) then
+		size_modMultiplier = 0.95;	-- Smaller size - 95%
+	elseif (size_mod == 6) then
+		size_modMultiplier = 1.05;	-- Plus size - 105%
+	elseif (size_mod == 7) then
+		size_modMultiplier = 1.10;	-- Extra size - 110%
+	elseif (size_mod == 8) then
+		size_modMultiplier = 1.15;	-- Super size - 115%
+	elseif (size_mod == 9) then
+		size_modMultiplier = 1.20;	-- Gigantic size - 120%
+	end
+
 	local sizekey = Map.GetWorldSize();
 	local sizevalues = {
-		[WorldSizeTypes.WORLDSIZE_DUEL]     = 12, -- 4
-		[WorldSizeTypes.WORLDSIZE_TINY]     = 18, -- 8
-		[WorldSizeTypes.WORLDSIZE_SMALL]    = 24, -- 16
-		[WorldSizeTypes.WORLDSIZE_STANDARD] = 30, -- 20
-		[WorldSizeTypes.WORLDSIZE_LARGE]    = 36, -- 24
-		[WorldSizeTypes.WORLDSIZE_HUGE]		= 42 -- 32
+		[WorldSizeTypes.WORLDSIZE_DUEL]     = 12 * size_modMultiplier, -- 4
+		[WorldSizeTypes.WORLDSIZE_TINY]     = 20 * size_modMultiplier, -- 8
+		[WorldSizeTypes.WORLDSIZE_SMALL]    = 28 * size_modMultiplier, -- 16
+		[WorldSizeTypes.WORLDSIZE_STANDARD] = 36 * size_modMultiplier, -- 20
+		[WorldSizeTypes.WORLDSIZE_LARGE]    = 44 * size_modMultiplier, -- 24
+		[WorldSizeTypes.WORLDSIZE_HUGE]		= 52 * size_modMultiplier -- 32
 	}
 	print("Generating Plates");
 
 	numPlates = sizevalues[sizekey] or 4
-	
+
 	local plates = Map.GetCustomOption(10);
 	if (plates == 4) then
 		plates = 1 + Map.Rand(3, "Random Plates Setting");
@@ -275,13 +340,13 @@ function FractalWorld:GeneratePlotTypes(args)
 	elseif (plates == 2) then
 		numPlates = numPlates;
 	else
-		numPlates = (numPlates * 4)/3;
+		numPlates = (numPlates * 6)/3;
 	end
 	print ("Plates Option", plates, numPlates);
-	
+
 	mapWidth = self.iNumPlotsX;
 	mapHeight = self.iNumPlotsY;
-	
+
 	local plates = {};
 	for i = 1, numPlates, 1 do
 		plates[i] = {};
@@ -297,10 +362,10 @@ function FractalWorld:GeneratePlotTypes(args)
 		plates[i].velocity.x = Map.Rand(21, "velocity in x direction")-10;
 		plates[i].velocity.y = Map.Rand(21, "velocity in y direction")-10;
 	end
-	
+
 	print("Calculating Plate Neighbours");
 
-	
+
 	neighbours = {};
 	for i = 1, numPlates, 1 do
 		neighbours[i] = {};
@@ -312,7 +377,7 @@ function FractalWorld:GeneratePlotTypes(args)
 		neighbours[i]["East"] = 0;
 		neighbours[i]["North"] = 0;
 	end
-	
+
 	for x = 0, mapWidth-1, 1 do
 		for y = 0, mapHeight-1, 1 do
 			currentPlate = partOfPlate(x,y,plates);
@@ -332,10 +397,10 @@ function FractalWorld:GeneratePlotTypes(args)
 	for plateIndex, thisPlate in ipairs(plates) do
 		thisPlate.neighbours.borders = neighbours[plateIndex];
 	end
-	
+
 	print("Creating Base Heightmap");
 	InitHeightmaps()
-	
+
 	print("Calculating Relative Plate Motions");
 	for plateIndex, thisPlate in ipairs(plates) do
 		motions = {};
@@ -344,26 +409,26 @@ function FractalWorld:GeneratePlotTypes(args)
 			if (thisPlate.neighbours.borders[plateIndex2] > 0) then
 				x = thatPlate.velocity.x - thisPlate.velocity.x;
 				y = thatPlate.velocity.y - thisPlate.velocity.y;
-				
+
 				motions[plateIndex2].x = x;
 				motions[plateIndex2].y = y;
-				
+
 				mag = math.sqrt(x*x+y*y);
 				if (mag < 5) then
 					motions[plateIndex2].boundaryType = "Passive";
 				else
 					xNorm = x/mag;
 					yNorm = y/mag;
-					
+
 					dirX = thatPlate.x - thisPlate.x;
 					dirY = thatPlate.y - thisPlate.y;
-					
+
 					dirMag = math.sqrt(dirX*dirX+dirY*dirY);
 					dirXNorm = dirX/dirMag;
 					dirYNorm = dirY/dirMag;
-					
+
 					dotProduct = xNorm*dirXNorm + yNorm*dirYNorm;
-				
+
 					if (dotProduct < -0.5) then
 						motions[plateIndex2].boundaryType = "Collision";
 					elseif (dotProduct > 0.5) then
@@ -384,7 +449,7 @@ function FractalWorld:GeneratePlotTypes(args)
 			plates[currentPlate].size = plates[currentPlate].size + 1;
 		end
 	end
-	
+
 	print("Calculating Plate Types");
 	---[[
 	oceanAmount = 0;
@@ -395,50 +460,50 @@ function FractalWorld:GeneratePlotTypes(args)
 	arcAmount = 0;
 	fractalAmount = 0;
 	spiffiness = 0;--]]--
-	
+
 	local islands = Map.GetCustomOption(6);
 	if (islands == 5) then
 		islands = 1 + Map.Rand(4, "Random Islands Setting");
 	end
 	local islandsModifier = 0;
 	if (islands == 1) then
-		islandsModifier = -10;
+		islandsModifier = -5;
 	elseif (islands == 2) then
-		islandsModifier = -0.05;
+		islandsModifier = -0.10;
 	elseif (islands == 3) then
-		islandsModifier = 0;
-	else
 		islandsModifier = 0.1;
+	else
+		islandsModifier = 0.3;
 	end
 	print ("Islands Option", islands);
-		
+
 	local land = Map.GetCustomOption(9);
 	if (land == 4) then
 		land = 1 + Map.Rand(3, "Random Land Setting");
 	end
 	local landModifier = 0;
 	if (land == 1) then
-		landModifier = -0.2;
+		landModifier = -0.18;
 	elseif (land == 2) then
-		landModifier = 0;
+		landModifier = 0.125;
 	else
 		landModifier = 0.2;
 	end
 	print ("Land Option", land);
-	
+
 	local continents = Map.GetCustomOption(8);
 	if (continents == 4) then
 		continents = 1 + Map.Rand(3, "Random Continents Setting");
 	end
 	local continents_modifier = 0;
 	if (continents == 1) then
-		continents_modifier = -0.5;
+		continents_modifier = -0.45;
 	elseif (continents == 2) then
-		continents_modifier = 0.0;
+		continents_modifier = -0.05;
 	else
 		continents_modifier = 1.5;
 	end
-	
+
 	for plateIndex, thisPlate in ipairs(plates) do
 		if (thisPlate.neighbours.borders["West"] > 5 or thisPlate.neighbours.borders["East"] > 5) then
 			thisPlate.terrainType = "Deep Ocean";
@@ -461,7 +526,7 @@ function FractalWorld:GeneratePlotTypes(args)
 		else
 			thisPlate.terrainType = "Continental"
 		end
-		
+
 		neighbouringContinentAmount = 0;
 		for neighbourIndex, thisNeighbour in ipairs(thisPlate.neighbours.borders) do
 			if (plates[neighbourIndex].terrainType == "Continental") then
@@ -470,14 +535,14 @@ function FractalWorld:GeneratePlotTypes(args)
 		end
 		neighbouringContinentAmount = neighbouringContinentAmount / (mapWidth*mapHeight) * 100
 		--print("Plate", plateIndex, "Neighbouring continent amount", neighbouringContinentAmount)
-		
+
 		if thisPlate.terrainType == "Continental" and RandomFloat() - neighbouringContinentAmount < 0.1 then
 			thisPlate.terrainType = "Fractal"
 			fractalAmount = fractalAmount + thisPlate.size;
 		else 
 			landAmount = landAmount + thisPlate.size;
 		end
-		
+
 		if thisPlate.terrainType == "Ocean" and RandomFloat() - (neighbouringContinentAmount * continents_modifier) < 0.0 then
 			thisPlate.terrainType = "Continental"
 			spiffiness = spiffiness + thisPlate.size;
@@ -493,7 +558,7 @@ function FractalWorld:GeneratePlotTypes(args)
 	print("Amount of island arc:  ", (arcAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
 	print("Amount of fractal:     ", (fractalAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
 	print("Ocean converted to land:", (spiffiness*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");--]]--
-	
+
 	--[[for plateIndex, thisPlate in ipairs(plates) do
 		print("Plate", plateIndex, "Position", thisPlate.x, thisPlate.y, "Mass", thisPlate.mass, "Size", thisPlate.size);
 		for neighbourIndex, thisNeighbour in ipairs(thisPlate.neighbours.borders) do
@@ -506,7 +571,7 @@ function FractalWorld:GeneratePlotTypes(args)
 	end--]]--
 
 	print("Generating Terrain");
-	
+
 	local plate_motion = Map.GetCustomOption(7);
 	if (plate_motion == 5) then
 		plate_motion = 1 + Map.Rand(4, "Random Plate Motion Setting");
@@ -517,17 +582,17 @@ function FractalWorld:GeneratePlotTypes(args)
 		plate_motionModifier = -0.05;
 		plate_motionMultiplier = 0.66;
 	elseif (plate_motion == 2) then
-		plate_motionModifier = 0;
+		plate_motionModifier = 0.1;
 		plate_motionMultiplier = 1;
 	elseif (plate_motion == 3) then
-		plate_motionModifier = 0.1;
-		plate_motionMultiplier = 1.66;
+		plate_motionModifier = 0.25;
+		plate_motionMultiplier = 2;
 	else
-		plate_motionModifier = 0.3;
+		plate_motionModifier = 0.35;
 		plate_motionMultiplier = 3;
 	end
 	print ("Plate Motion Option", plate_motion);
-	
+
 	local continents = Map.GetCustomOption(8);
 	if (continents == 4) then
 		continents = 1 + Map.Rand(3, "Random Continents Setting");
@@ -535,26 +600,26 @@ function FractalWorld:GeneratePlotTypes(args)
 	local continents_modifier1 = 0;
 	local continents_modifier2 = 0;
 	if (continents == 1) then
-		continents_modifier1 = -0.2;
-		continents_modifier2 = -0.1;
+		continents_modifier1 = -0.15;
+		continents_modifier2 = -0.05;
 	elseif (continents == 2) then
-		continents_modifier1 = 0.05;
-		continents_modifier2 = 0.05;
+		continents_modifier1 = 0.0;
+		continents_modifier2 = 0.075;
 	else
 		continents_modifier1 = 0.3;
 		continents_modifier2 = 0.1;
 	end
 	print ("Continents Option", continents);
-		
+
 	local sea_level = Map.GetCustomOption(4);
 	if (sea_level == 4) then
 		sea_level = 1 + Map.Rand(3, "Random Sea Level");
 	end
 	local sea_levelModifier = 0;
 	if (sea_level == 1) then
-		sea_levelModifier = -0.1;
+		sea_levelModifier = -0.5;
 	elseif (sea_level == 2) then
-		sea_levelModifier = 0;
+		sea_levelModifier = -0.025;
 	else
 		sea_levelModifier = 0.1;
 	end
@@ -564,7 +629,7 @@ function FractalWorld:GeneratePlotTypes(args)
 		for y = 0, mapHeight-1, 1 do
 			local i = y * self.iNumPlotsX + x;
 			local currentPlate = partOfPlate(x, y, plates);
-			
+
 			neighbour = adjacentToPlate(x,y,plates);
 			--neighbour2 = -1;
 			--if (neighbour <= 0) then neighbour2 = oneOff(x,y,plates) end
@@ -582,7 +647,7 @@ function FractalWorld:GeneratePlotTypes(args)
 			else
 				self.plotTypes[i] = PlotTypes.PLOT_LAND;
 			end]]--
-			
+
 			local value;
 			if (plates[currentPlate].terrainType == "Ocean") then value = GetHeight(x,y,1.5,0)-0.5+islandsModifier;
 			elseif (plates[currentPlate].terrainType == "Deep Ocean") then value = -1;
@@ -598,13 +663,13 @@ function FractalWorld:GeneratePlotTypes(args)
 				if (value < 0 + sea_levelModifier and numAdjacentLandTiles(x,y,1.5,1,sea_levelModifier,0.05) >= 3) then value = 0.1 end 
 			else value = 1;
 			end
-			
+
 			if (neighbour > 0) then
 				boundaryType = plates[currentPlate].neighbours.relativeMotions[neighbour].boundaryType;
 				if (boundaryType == "Collision") then
 					terrainType = plates[currentPlate].terrainType;
 					terrainTypeN = plates[neighbour].terrainType;
-					
+
 					if (terrainType == "Continental") then
 						value = value + 0.05 + RandomFloat()/5.0 + plate_motionModifier;
 					elseif (terrainType == "Fractal") then
@@ -622,7 +687,7 @@ function FractalWorld:GeneratePlotTypes(args)
 							value = value + 0.1 + RandomFloat()/2.5;
 						end
 					end
-					
+
 					if (value < 0.1 + RandomFloat()/5.0 and RandomFloat() < 0.5) then
 						value = value - 0.5;
 					end
@@ -650,12 +715,12 @@ function FractalWorld:GeneratePlotTypes(args)
 					--value = value - math.random()/20.0 - plate_motionModifier/3;
 				end
 			end--]]--
-			
+
 			if (value < 0 + sea_levelModifier) then
 				self.plotTypes[i] = PlotTypes.PLOT_OCEAN;
-			elseif (value < 0.05 + RandomFloat()/2.0) then
+			elseif (value < RandomFloat()/2.0) then
 				self.plotTypes[i] = PlotTypes.PLOT_LAND;
-			elseif (value < 0.2 + RandomFloat()/2.0) then
+			elseif (value < 0.4 + RandomFloat()/2.0) then
 				self.plotTypes[i] = PlotTypes.PLOT_HILLS;
 			else
 				self.plotTypes[i] = PlotTypes.PLOT_MOUNTAIN;
@@ -705,10 +770,10 @@ function partOfPlate(x, y, plates)
 
 	yShift = skewFactor[1]*math.sin(x/skewFactor[4]+skewFactor[7]) + skewFactor[2]*math.sin(x/skewFactor[5]+skewFactor[8]) + skewFactor[3]*math.sin(x/skewFactor[6]+skewFactor[9]);
 	xShift = skewFactor[1]*math.sin(y/skewFactor[5]+skewFactor[9]) + skewFactor[2]*math.sin(y/skewFactor[6]+skewFactor[7]) + skewFactor[3]*math.sin(y/skewFactor[4]+skewFactor[8]);
-	
+
 	yFuddle = math.pow((0.5*math.sin(x/skewFactor2[1]+skewFactor2[5])+0.5*math.sin(x/skewFactor2[2]+skewFactor2[6])),2)*(math.sin(x*skewFactor2[3]+skewFactor2[7])+math.sin(x*skewFactor2[4]+skewFactor2[8]));
 	xFuddle = math.pow((0.5*math.sin(y/skewFactor2[1]+skewFactor2[6])+0.5*math.sin(y/skewFactor2[2]+skewFactor2[7])),2)*(math.sin(y*skewFactor2[3]+skewFactor2[8])+math.sin(y*skewFactor2[4]+skewFactor2[5]));
-	
+
 	xAdj = x + xShift+xFuddle;
 	yAdj = y + yShift+yFuddle;
 
@@ -762,7 +827,7 @@ function oneOff(x,y,plates)
 	indices[4] = adjacentToPlate(x+1, y,plates);
 	indices[5] = adjacentToPlate(x-1+(y%2), y-1,plates);
 	indices[6] = adjacentToPlate(x+(y%2), y-1,plates);
-	
+
 	biggest = -1;
 	for i = 1, 6, 1 do -- Huge hack
 		if (indices[i] ~= -1) then return indices[i] end 
@@ -780,7 +845,7 @@ function getPlateBoundaryInfo(x, y, plates)
 	info["South"] = 0;
 	info["East"] = 0;
 	info["North"] = 0;
-	
+
 	local index1 = partOfPlate(x-1+(y%2), y+1,plates);
 	if (info[index1] ~= nil) then
 		info[index1] = info[index1]+1;
@@ -805,7 +870,6 @@ function getPlateBoundaryInfo(x, y, plates)
 	if (info[index6] ~= nil) then
 		info[index6] = info[index6]+1;
 	end
-	
 	return info;
 end
 
@@ -837,12 +901,12 @@ function numAdjacentLandTiles(x, y, n, f, s, d)
 	if (height > 0 + s) then
 		adjacentLandTiles = adjacentLandTiles+1;
 	end
-	
+
 	return adjacentLandTiles;
 end
 
 function isAtPlateBoundary(x, y, plates,currentPlate)
-	
+
 	if (partOfPlate(x-1+(y%2), y+1,plates) ~= currentPlate) then
 		return true;
 	end
@@ -861,7 +925,7 @@ function isAtPlateBoundary(x, y, plates,currentPlate)
 	if (partOfPlate(x+(y%2), y-1,plates) ~= currentPlate) then
 		return true;
 	end
-		
+
 	return false;
 end
 
@@ -870,7 +934,7 @@ function GenerateCoasts(args)
 	local args = args or {};
 	local bExpandCoasts = args.bExpandCoasts or true;
 	local expansion_diceroll_table = args.expansion_diceroll_table or {4, 4};
-	
+
 	local shallowWater = GameDefines.SHALLOW_WATER_TERRAIN;
 	local deepWater = GameDefines.DEEP_WATER_TERRAIN;
 
@@ -883,7 +947,7 @@ function GenerateCoasts(args)
 			end
 		end
 	end
-	
+
 	if bExpandCoasts == false then
 		return
 	end
@@ -911,10 +975,10 @@ function GeneratePlotTypes()
 
 	local fractal_world = FractalWorld.Create();
 	fractal_world:InitFractal{
-		continent_grain = 3};
+		continent_grain = 4};
 
 	local plotTypes = fractal_world:GeneratePlotTypes(args);
-	
+
 	SetPlotTypes(plotTypes);
 
 	GenerateCoasts(args);
@@ -925,7 +989,7 @@ end
 --
 function GenerateTerrain()
 	print("Generating Terrain (Lua Small Continents) ...");
-	
+
 	-- Get Temperature setting input by user.
 	local temp = Map.GetCustomOption(2)
 	if temp == 4 then
@@ -933,18 +997,18 @@ function GenerateTerrain()
 	end
 
 	local args = {
-		temperature = temp,	
-		grain_amount = 3,				
-		iDesertPercent = 32,			
-		fSnowLatitude = 0.82,			-- MOD -- DEFAULT -- 0.75
-		fTundraLatitude = 0.70,			-- MOD -- DEFAULT -- 0.6
-		fDesertBottomLatitude =	0.2,	
-		fDesertTopLatitude = 0.4		-- MOD -- DEFAULT -- 0.5
+		temperature = temp,
+		grain_amount = 3,
+		iDesertPercent = 35,
+		fSnowLatitude = 0.8,
+		fTundraLatitude = 0.6,
+		fDesertBottomLatitude =	0.33,
+		fDesertTopLatitude = 0.45
 		};
 	local terraingen = TerrainGenerator.Create(args);
 
 	terrainTypes = terraingen:GenerateTerrain();
-	
+
 	SetTerrainTypes(terrainTypes);
 end
 ------------------------------------------------------------------------------
@@ -985,17 +1049,17 @@ function AddFeatures()
 	if rain == 4 then
 		rain = 1 + Map.Rand(3, "Random Rainfall - Lua");
 	end
-	
+
 	local args = {
 		rainfall = rain,
-		jungle_grain = 6,		-- MOD -- DEFAULT -- 5
-		forest_grain = 6,		
-		clump_grain = 4,		-- MOD -- DEFAULT -- 3
-		iJungleFactor = 4,		-- MOD -- DEFAULT -- 5
-		iJunglePercent = 50,	-- MOD -- DEFAULT -- 65
-		iForestPercent = 35,	-- MOD -- DEFAULT -- 31
-		fMarshPercent = 8,		
-		iOasisPercent = 6		
+		jungle_grain = 8,
+		forest_grain = 8,
+		clump_grain = 4,
+		iJungleFactor = 6,
+		iJunglePercent = 67,
+		iForestPercent = 45,
+		fMarshPercent = 20,
+		iOasisPercent = 15
 		};
 	local featuregen = FeatureGenerator.Create(args);
 
@@ -1013,7 +1077,7 @@ function StartPlotSystem()
 
 	print("Creating start plot database.");
 	local start_plot_database = AssignStartingPlots.Create()
-	
+
 	print("Dividing the map in to Regions.");
 	-- Regional Division Method 2: Continental
 	local args = {
@@ -1031,7 +1095,7 @@ function StartPlotSystem()
 	print("Coastal Starts Option", coastalStarts);
 	local args = {mustBeCoast = (coastalStarts == 2) };
 	start_plot_database:ChooseLocations(args)
-	
+
 	print("Normalizing start locations and assigning them to Players.");
 	start_plot_database:BalanceAndAssign()
 
