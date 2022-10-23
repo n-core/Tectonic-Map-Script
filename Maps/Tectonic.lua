@@ -185,6 +185,7 @@ function GetMapInitData(worldSize)
 	local largeX 	= 128;		local largeY	= 80;
 	local hugeX 	= 152;		local hugeY		= 96;
 
+	local size_mod = Map.GetCustomOption(1);
 	local size_modMultiplier = 1;	-- Normal size - 100%
 	if (size_mod == 1) then
 		size_modMultiplier = 0.80;	-- Compressed size - 80%
