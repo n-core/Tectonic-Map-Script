@@ -4,19 +4,19 @@ include("FractalWorld");
 include("FeatureGenerator");
 include("TerrainGenerator");
 
-local versionName = "V"; -- version 5
+local versionName = "V" -- version 5
 local L = Locale.ConvertTextKey;
 ------------------------------------------------------------------------------
 
 function GetMapScriptInfo()
-	local size_mod, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts = GetCoreMapOptions()
+	local world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, size_mod, coastalStarts = GetCoreMapOptions()
 	return {
 		Name = L("TXT_KEY_TECTONIC") .. " - " .. versionName,
 		Description = "TXT_KEY_TECTONIC_HELP",
 		IsAdvancedMap = 0,
 		IconIndex = 5,
 		SortIndex = 1,
-		CustomOptions = {size_mod, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts},
+		CustomOptions = {world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, size_mod, coastalStarts},
 	};
 end
 
@@ -154,7 +154,7 @@ function GetCoreMapOptions()
 		DefaultValue = 2,
 		SortPriority = -89,
 	};
-	return size_mod, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, coastalStarts
+	return world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates, size_mod, coastalStarts
 end
 
 function FractalWorld:ShiftPlotTypes()
@@ -177,15 +177,15 @@ local skewFactor2;
 
 function GetMapInitData(worldSize)
 	-- This function can reset map grid sizes or world wrap settings.
-	--[[	X sizes						Y sizes		]]
+	--[[	X width						Y height	
 	local duelX 	= 52;		local duelY		= 32;
 	local tinyX 	= 64;		local tinyY		= 40;
 	local smallX 	= 84;		local smallY	= 52;
 	local standardX	= 104;		local standardY	= 64;
 	local largeX 	= 128;		local largeY	= 80;
-	local hugeX 	= 152;		local hugeY		= 96;
+	local hugeX 	= 152;		local hugeY		= 96;]]
 
-	local size_mod = Map.GetCustomOption(1);
+	local size_mod = Map.GetCustomOption(11);
 	local size_modMultiplier = 1;	-- Normal size - 100%
 	if (size_mod == 1) then
 		size_modMultiplier = 0.80;	-- Compressed size - 80%
@@ -204,25 +204,28 @@ function GetMapInitData(worldSize)
 	elseif (size_mod == 9) then
 		size_modMultiplier = 1.20;	-- Gigantic size - 120%
 	end
+	print("Map Size modifier: " .. size_modMultiplier * 100 .. "%");
 
 	local worldsizes = {
-			[GameInfo.Worlds.WORLDSIZE_DUEL.ID] = {duelX * size_modMultiplier, duelY * size_modMultiplier},
-			[GameInfo.Worlds.WORLDSIZE_TINY.ID] = {tinyX * size_modMultiplier, tinyY * size_modMultiplier},
-			[GameInfo.Worlds.WORLDSIZE_SMALL.ID] = {smallX * size_modMultiplier, smallY * size_modMultiplier},
-			[GameInfo.Worlds.WORLDSIZE_STANDARD.ID] = {standardX * size_modMultiplier, standardY * size_modMultiplier},
-			[GameInfo.Worlds.WORLDSIZE_LARGE.ID] = {largeX * size_modMultiplier, largeY * size_modMultiplier},
-			[GameInfo.Worlds.WORLDSIZE_HUGE.ID] = {hugeX * size_modMultiplier, hugeY * size_modMultiplier}
+			[GameInfo.Worlds.WORLDSIZE_DUEL.ID] = {52, 32},
+			[GameInfo.Worlds.WORLDSIZE_TINY.ID] = {64, 40},
+			[GameInfo.Worlds.WORLDSIZE_SMALL.ID] = {84, 52},
+			[GameInfo.Worlds.WORLDSIZE_STANDARD.ID] = {104, 64},
+			[GameInfo.Worlds.WORLDSIZE_LARGE.ID] = {128, 80},
+			[GameInfo.Worlds.WORLDSIZE_HUGE.ID] = {152, 96}
 	}
 	local grid_size = worldsizes[worldSize];
 	--
 	local world = GameInfo.Worlds[worldSize];
 	if(world ~= nil) then
+		print("Map Size before modifier = Width: " .. grid_size[1] .. ", Height: " .. grid_size[2]);
+		print("Map Size after modifier = Width: " .. grid_size[1] * size_modMultiplier.. ", Height: " .. grid_size[2] * size_modMultiplier);
 	return {
-		Width = grid_size[1],
-		Height = grid_size[2],
+		Width = grid_size[1] * size_modMultiplier,
+		Height = grid_size[2] * size_modMultiplier,
 		WrapX = true,
 	};
-     end
+    end
 end
 
 function InitHeightmaps()
@@ -299,7 +302,7 @@ function FractalWorld:GeneratePlotTypes(args)
 	for row in GameInfo.Worlds() do
 		WorldSizeTypes[row.Type] = row.ID;
 	end
-	local size_mod = Map.GetCustomOption(1);
+	local size_mod = Map.GetCustomOption(11);
 	local size_modMultiplier = 1;	-- Normal size - 100%
 	if (size_mod == 1) then
 		size_modMultiplier = 0.80;	-- Compressed size - 80%
@@ -321,16 +324,17 @@ function FractalWorld:GeneratePlotTypes(args)
 
 	local sizekey = Map.GetWorldSize();
 	local sizevalues = {
-		[WorldSizeTypes.WORLDSIZE_DUEL]     = 12 * size_modMultiplier, -- 4
-		[WorldSizeTypes.WORLDSIZE_TINY]     = 20 * size_modMultiplier, -- 8
-		[WorldSizeTypes.WORLDSIZE_SMALL]    = 28 * size_modMultiplier, -- 16
-		[WorldSizeTypes.WORLDSIZE_STANDARD] = 36 * size_modMultiplier, -- 20
-		[WorldSizeTypes.WORLDSIZE_LARGE]    = 44 * size_modMultiplier, -- 24
-		[WorldSizeTypes.WORLDSIZE_HUGE]		= 52 * size_modMultiplier -- 32
+		[WorldSizeTypes.WORLDSIZE_DUEL]     = 12, -- 4
+		[WorldSizeTypes.WORLDSIZE_TINY]     = 20, -- 8
+		[WorldSizeTypes.WORLDSIZE_SMALL]    = 28, -- 16
+		[WorldSizeTypes.WORLDSIZE_STANDARD] = 36, -- 20
+		[WorldSizeTypes.WORLDSIZE_LARGE]    = 44, -- 24
+		[WorldSizeTypes.WORLDSIZE_HUGE]		= 52 -- 32
 	}
 	print("Generating Plates");
 
-	numPlates = sizevalues[sizekey] or 4
+	numPlates = (sizevalues[sizekey] or 8) * size_modMultiplier;
+	print("Number of plates: " .. numPlates);
 
 	local plates = Map.GetCustomOption(10);
 	if (plates == 4) then
@@ -1089,7 +1093,7 @@ function StartPlotSystem()
 
 	print("Choosing start locations for civilizations.");
 	-- Forcing starts along the ocean.
-	local coastalStarts = Map.GetCustomOption(11);
+	local coastalStarts = Map.GetCustomOption(12);
 	if coastalStarts == 3 then
 		coastalStarts = 1 + Map.Rand(2, "Random Coastal Starts");
 	end
