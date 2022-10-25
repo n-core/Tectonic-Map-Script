@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Deploy" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
+    <ProjectGuid>{efbe91cf-8dfd-4fd2-bf84-900c9422d533}</ProjectGuid>
+    <Name>Tectonic Map Script</Name>
+    <Guid>ba57b38a-e66d-4bcc-91f4-94a1d73f2a62</Guid>
+    <ModVersion>5</ModVersion>
+    <Stability>Stable</Stability>
+    <Teaser>An extremely random map based on global tectonics.</Teaser>
+    <Description>Generates a map based on global tectonics.
+[NEWLINE]Maps are similar to a combination of Fractal, Small Continents, Archipelago, with added tectonic elements like mountain belts and rift zones.
+[NEWLINE]Works best on relatively large maps (Map size options are equivalent to Terra maps).
+[NEWLINE]
+[NEWLINE]Custom options:
+[NEWLINE][ICON_BULLET]Size Modifier
+[NEWLINE]Alter the map slightly by applying a size modifier to it.
+[NEWLINE][ICON_BULLET]Sea Level
+[NEWLINE]Changes the height of the water rather than the amount of ocean.
+[NEWLINE][ICON_BULLET]Ocean Rift Width
+[NEWLINE]Adjust the width of ocean rifts and impassable rift at the edge of the map.
+[NEWLINE][ICON_BULLET]Plate Motion
+[NEWLINE]Alters the prominence of mountain belts and rifts. Faster plate motion means higher mountain ranges and deeper ocean rifts.
+[NEWLINE][ICON_BULLET]Continents
+[NEWLINE]Affects the shape of the continental land masses to have lakes and inlets.
+[NEWLINE][ICON_BULLET]Land
+[NEWLINE]Changes the amount of land on the map by altering the number of oceanic plates.
+[NEWLINE][ICON_BULLET]Plates
+[NEWLINE]Affects the number of tectonic plates that will be used in map generation. More plates will result in smaller land masses and more intricate structures.
+[NEWLINE]
+[NEWLINE]
+[NEWLINE]A (very) small part of the code is based on Small Continents Deluxe (v 100) by James Barrows.
+[NEWLINE]
+[NEWLINE]Version 5 (V) is a modification fork by N.Core</Description>
+    <Authors>Haftetavenscrap, N.Core</Authors>
+    <SpecialThanks>
+    </SpecialThanks>
+    <SpecialThanks>
+    </SpecialThanks>
+    <AffectsSavedGames>false</AffectsSavedGames>
+    <MinCompatibleSaveVersion>0</MinCompatibleSaveVersion>
+    <SupportsSinglePlayer>true</SupportsSinglePlayer>
+    <SupportsMultiplayer>true</SupportsMultiplayer>
+    <SupportsHotSeat>true</SupportsHotSeat>
+    <SupportsMac>true</SupportsMac>
+    <AssemblyName>Tectonic Map Script</AssemblyName>
+    <RootNamespace>Tectonic Map Script</RootNamespace>
+    <ModReferences />
+    <ModActions>
+      <Action xmlns="">
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>Text/Tectonic_text_en_us.xml</FileName>
+      </Action>
+    </ModActions>
+    <ModContent>
+      <Content xmlns="">
+        <Type>MapScript</Type>
+        <Name>Tectonic</Name>
+        <Description>Tectonic</Description>
+        <FileName>Maps/Tectonic.lua</FileName>
+      </Content>
+    </ModContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Default' ">
+    <OutputPath>.</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Package Only' ">
+    <PackageMod>true</PackageMod>
+    <DeployMod>false</DeployMod>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Deploy Only' ">
+    <PackageMod>false</PackageMod>
+    <DeployMod>true</DeployMod>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Maps" />
+    <Folder Include="Text" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Maps\Tectonic.lua">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>False</ImportIntoVFS>
+    </Content>
+    <Content Include="Text\Tectonic_text_en_us.xml">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>False</ImportIntoVFS>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Firaxis\ModBuddy\Civ5Mod.targets" />
+</Project>
