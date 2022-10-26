@@ -16,12 +16,11 @@ Custom options for this map:
 -   Plates - Affects the number of tectonic plates that will be used in map generation. More plates will result in smaller land masses and more intricate structures.
 
 Instructions:
-- Go to the 'My Documents/My Games/Sid Meier's Civilization 5/' folder
 
 You can either
-- Copy the 'Maps' and 'Text' folder
+- Copy and Paste the 'Maps' and 'Text' folder to 'My Documents/My Games/Sid Meier's Civilization 5/' folder
 
 Or,
-- Copy the 'Tectonic Map Script.civ5mod' file to 'MODS' folder
+- Copy the 'Tectonic Map Script.civ5mod' file to 'My Documents/My Games/Sid Meier's Civilization 5/MODS' folder
 
 Don't forget to delete the 'Localization-Merged.db' file from cache folder to reload the required texts.
