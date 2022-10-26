@@ -18,7 +18,7 @@ Custom options for this map:
 Instructions:
 
 You can either
-- Copy and Paste the 'Maps' and 'Text' folder to 'My Documents/My Games/Sid Meier's Civilization 5/' folder
+- Copy the 'Maps' and 'Text' folders and to 'My Documents/My Games/Sid Meier's Civilization 5/' folder
 
 Or,
 - Copy the 'Tectonic Map Script.civ5mod' file to 'My Documents/My Games/Sid Meier's Civilization 5/MODS' folder

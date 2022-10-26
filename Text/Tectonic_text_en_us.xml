@@ -31,7 +31,7 @@
 			<Text>Plate Motion</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_PLATE_MOTION_HELP">
-			<Text>Alters the prominence of mountain belts and rifts.[NEWLINE]Faster means higher mountain ranges and deeper ocean rifts.</Text>
+			<Text>Alters the prominence of mountain belts and rifts. Faster means higher mountain ranges and deeper ocean rifts.</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_CONTINENTS">
 			<Text>Continents</Text>
@@ -49,7 +49,7 @@
 			<Text>Plates</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_PLATES_HELP">
-			<Text>Affects the number of tectonic plates that will be used in map generation.[NEWLINE]More plates will result in smaller land masses and more intricate structures.</Text>
+			<Text>Affects the number of tectonic plates that will be used in map generation. More plates will result in smaller land masses and more intricate structures.</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_COASTAL_START">
 			<Text>Force Coastal Start</Text>
