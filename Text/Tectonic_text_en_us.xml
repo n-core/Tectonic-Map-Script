@@ -9,20 +9,32 @@
 			<Text>An extremely random world based on global tectonics.</Text>
 		</Replace>
 		<!-- Map option category -->
+		<Replace Tag="TXT_KEY_MAP_OPTION_MAP_RATIO">
+			<Text>Map Ratio</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_MAP_RATIO_HELP">
+			<Text>Choose the map ratio that you prefer. From proportionally squared for compact expansion, to wide rectangular map for far away expansion.</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_MODIFIER">
 			<Text>Size Modifier</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_MODIFIER_HELP">
-			<Text>Alter the map slightly by applying a size modifier to it.</Text>
+			<Text>Alter the map size result by applying a size modifier to it.</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SEA_LEVEL_HELP_TECTONIC">
 			<Text>With Tectonic, Sea Level changes the height of the water rather than the amount of ocean.</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_OCEAN_RIFT_WIDTH">
-			<Text>Ocean Rift Width</Text>
+			<Text>Rift Width</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_OCEAN_RIFT_WIDTH_HELP">
-			<Text>Adjust the width of ocean rifts and impassable rift at the edge of the map.</Text>
+			<Text>Adjust the width of ocean rifts between plates and impassable rift at the easternmost and westernmost edge of the map.</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_ARCTIC_OCEAN_WIDTH">
+			<Text>Arctic Ocean Width</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_ARCTIC_OCEAN_WIDTH_HELP">
+			<Text>Adjust the width of arctic ocean rifts at the northernmost and southernmost edge of the map.</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_ISLANDS_HELP">
 			<Text>Adjust the amount of occurrence for islands generation.</Text>
@@ -55,9 +67,30 @@
 			<Text>Force Coastal Start</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_COASTAL_START_HELP">
-			<Text>Force every player to start on coast.</Text>
+			<Text>Force every civilization to start on coast. (If possible)</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_START_PLACEMENT">
+			<Text>Start Placement</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_START_PLACEMENT_HELP">
+			<Text>Choose the regional division method that affects start placement for major civilizations and how AI will behave to the map.</Text>
 		</Replace>
 		<!-- Map options -->
+		<Replace Tag="TXT_KEY_MAP_OPTION_SQUARED">
+			<Text>Squared</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SQUARISH">
+			<Text>Squarish</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_RECTANGULAR">
+			<Text>Rectangular</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_WIDE_RECTANGULAR">
+			<Text>Wide Rectangular</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_RECTILINEAR">
+			<Text>Rectilinear</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_80">
 			<Text>Compressed - 80%</Text>
 		</Replace>
@@ -136,11 +169,23 @@
 		<Replace Tag="TXT_KEY_MAP_OPTION_RAMMING_SPEED">
 			<Text>Ramming Speed!</Text>
 		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_STRINGY">
+			<Text>Stringy</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SNAKY">
 			<Text>Snaky</Text>
 		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_CHUNKY">
+			<Text>Chunky</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_BLOCKY">
 			<Text>Blocky</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_ANY_CONTINENTS">
+			<Text>Any Continents</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_LARGEST_LANDMASS">
+			<Text>Largest Landmass</Text>
 		</Replace>
 	</Language_en_US>
 </GameData>

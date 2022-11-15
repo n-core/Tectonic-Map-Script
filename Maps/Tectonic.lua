@@ -3,12 +3,13 @@
 -- Tectonic map script --
 
   Credits:
-- Haftetavenscrap (Jibbles on Steam)	- Original creator of the map script
-- James Barrows							- A (very) small part of the code is based on Small Continents Deluxe (v 100)
-- N.Core								- Added size modifier, ocean rift width option,
-										  more options for existing custom options for gradual adjustment,
-										  balancing the map to be kinder to smaller sizes by generate more land and fewer islands,
-										  and the opposite for larger sizes.
+- Haftetavenscrap		- Original creator of the map script
+  (Jibbles on Steam)
+- James Barrows			- A (very) small part of the code is based on Small Continents Deluxe (v 100)
+- N.Core				- Added size modifier, ocean rift width option, start placement method,
+						  more options for existing custom options for gradual adjustment,
+						  balancing the map to be kinder to smaller sizes by generate more land and fewer islands,
+						  and the opposite for larger sizes.
 
 
 Generates a map based on global tectonics.
@@ -22,19 +23,51 @@ include("FractalWorld");
 include("FeatureGenerator");
 include("TerrainGenerator");
 
-local versionName = "V" -- version 5
+local versionName = "VI" -- version 6
 local L = Locale.ConvertTextKey;
 ------------------------------------------------------------------------------
 
 function GetMapScriptInfo()
-	local world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates_set, size_mod, ocean_width, coastalStarts = GetCoreMapOptions()
+	local	world_age,
+			temperature,
+			rainfall,
+			sea_level,
+			resources,
+			islands,
+			plate_motion,
+			continents,
+			land,
+			plates_set,
+			map_ratio,
+			size_mod,
+			ocean_width,
+			arctic_width,
+			coastalStarts,
+			startPlacement = GetCoreMapOptions()
 	return {
 		Name = L("TXT_KEY_TECTONIC") .. " - " .. versionName,
 		Description = "TXT_KEY_TECTONIC_HELP",
 		IsAdvancedMap = 0,
 		IconIndex = 5,
 		SortIndex = 1,
-		CustomOptions = {world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates_set, size_mod, ocean_width, coastalStarts},
+		CustomOptions = {
+			world_age,
+			temperature,
+			rainfall,
+			sea_level,
+			resources,
+			islands,
+			plate_motion,
+			continents,
+			land,
+			plates_set,
+			map_ratio,
+			size_mod,
+			ocean_width,
+			arctic_width,
+			coastalStarts,
+			startPlacement
+		},
 	};
 end
 
@@ -43,6 +76,20 @@ function GetCoreMapOptions()
 	higher values. Negative integers are valid. So the Core Map Options, which should 
 	always be at the top of the list, are getting negative values from -99 to -95. Note
 	that any set of options with identical SortPriority will be sorted alphabetically. ]]--
+	local map_ratio = {
+		Name = "TXT_KEY_MAP_OPTION_MAP_RATIO",
+		Description = "TXT_KEY_MAP_OPTION_MAP_RATIO_HELP",
+		Values = {
+			"TXT_KEY_MAP_OPTION_SQUARED",
+			"TXT_KEY_MAP_OPTION_SQUARISH",
+			"TXT_KEY_MAP_OPTION_RECTANGULAR",
+			"TXT_KEY_MAP_OPTION_WIDE_RECTANGULAR",
+			"TXT_KEY_MAP_OPTION_RECTILINEAR",
+			"TXT_KEY_MAP_OPTION_RANDOM",
+		},
+		DefaultValue = 3,
+		SortPriority = -99,
+	};
 	local size_mod = {
 		Name = "TXT_KEY_MAP_OPTION_SIZE_MODIFIER",
 		Description = "TXT_KEY_MAP_OPTION_SIZE_MODIFIER_HELP",
@@ -58,7 +105,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_SIZE_120",
 		},
 		DefaultValue = 5,
-		SortPriority = -99,
+		SortPriority = -98,
 	};
 	local temperature = {
 		Name = "TXT_KEY_MAP_OPTION_TEMPERATURE",
@@ -69,7 +116,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
-		SortPriority = -98,
+		SortPriority = -97,
 	};
 	local rainfall = {
 		Name = "TXT_KEY_MAP_OPTION_RAINFALL",
@@ -80,7 +127,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
-		SortPriority = -97,
+		SortPriority = -96,
 	};
 	local sea_level = {
 		Name = "TXT_KEY_MAP_OPTION_SEA_LEVEL",
@@ -94,7 +141,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 3,
-		SortPriority = -96,
+		SortPriority = -95,
 	};
 	local ocean_width = {
 		Name = "TXT_KEY_MAP_OPTION_OCEAN_RIFT_WIDTH",
@@ -108,7 +155,21 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 3,
-		SortPriority = -95,
+		SortPriority = -94,
+	};
+	local arctic_width = {
+		Name = "TXT_KEY_MAP_OPTION_ARCTIC_OCEAN_WIDTH",
+		Description = "TXT_KEY_MAP_OPTION_ARCTIC_OCEAN_WIDTH_HELP",
+		Values = {
+			"TXT_KEY_MAP_OPTION_TIGHT",
+			"TXT_KEY_MAP_OPTION_NARROW",
+			"TXT_KEY_MAP_OPTION_NORMAL",
+			"TXT_KEY_MAP_OPTION_WIDE",
+			"TXT_KEY_MAP_OPTION_LOOSE",
+			"TXT_KEY_MAP_OPTION_RANDOM",
+		},
+		DefaultValue = 3,
+		SortPriority = -93,
 	};
 	local resources = {
 		Name = "TXT_KEY_MAP_OPTION_RESOURCES",
@@ -121,7 +182,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
-		SortPriority = -94,
+		SortPriority = -92,
 	};
 	local islands = {
 		Name = "TXT_KEY_MAP_OPTION_ISLANDS",
@@ -136,7 +197,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 4,
-		SortPriority = -93,
+		SortPriority = -91,
 	};
 	local plate_motion = {
 		Name = "TXT_KEY_MAP_OPTION_PLATE_MOTION",
@@ -149,19 +210,21 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
-		SortPriority = -92,
+		SortPriority = -90,
 	};
 	local continents = {
 		Name = "TXT_KEY_MAP_OPTION_CONTINENTS",
 		Description = "TXT_KEY_MAP_OPTION_CONTINENTS_HELP",
 		Values = {
+			"TXT_KEY_MAP_OPTION_STRINGY",
 			"TXT_KEY_MAP_OPTION_SNAKY",
 			"TXT_KEY_MAP_OPTION_STANDARD",
+			"TXT_KEY_MAP_OPTION_CHUNKY",
 			"TXT_KEY_MAP_OPTION_BLOCKY",
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
-		DefaultValue = 2,
-		SortPriority = -91,
+		DefaultValue = 3,
+		SortPriority = -89,
 	};
 	local land = {
 		Name = "TXT_KEY_MAP_OPTION_LAND",
@@ -175,7 +238,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 3,
-		SortPriority = -90,
+		SortPriority = -88,
 	};
 	local plates_set = {
 		Name = "TXT_KEY_MAP_OPTION_PLATES",
@@ -189,7 +252,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 3,
-		SortPriority = -89,
+		SortPriority = -87,
 	};
 	local coastalStarts = {
 		Name = "TXT_KEY_MAP_OPTION_COASTAL_START",
@@ -200,9 +263,21 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 2,
-		SortPriority = -88,
+		SortPriority = -86,
 	};
-	return world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates_set, size_mod, ocean_width, coastalStarts
+	local startPlacement = {
+		Name = "TXT_KEY_MAP_OPTION_START_PLACEMENT",
+		Description = "TXT_KEY_MAP_OPTION_START_PLACEMENT_HELP",
+		Values = {
+			"TXT_KEY_MAP_OPTION_LARGEST_LANDMASS",
+			"TXT_KEY_MAP_OPTION_ANY_CONTINENTS",
+			"TXT_KEY_MAP_OPTION_START_ANYWHERE",
+			"TXT_KEY_MAP_OPTION_RANDOM",
+		},
+		DefaultValue = 2,
+		SortPriority = -85,
+	};
+	return world_age, temperature, rainfall, sea_level, resources, islands, plate_motion, continents, land, plates_set, map_ratio, size_mod, ocean_width, arctic_width, coastalStarts, startPlacement
 end
 
 function FractalWorld:ShiftPlotTypes()
@@ -228,15 +303,38 @@ local skewFactor2;
 
 function GetMapInitData(worldSize)
 	-- This function can reset map grid sizes or world wrap settings.
-	--[[	X width						Y height	
-	local duelX 	= 52;		local duelY		= 32;
-	local tinyX 	= 64;		local tinyY		= 40;
-	local smallX 	= 84;		local smallY	= 52;
-	local standardX	= 104;		local standardY	= 64;
-	local largeX 	= 128;		local largeY	= 80;
-	local hugeX 	= 150;		local hugeY		= 94;]]
 
-	local size_mod = Map.GetCustomOption(11);
+	local map_ratio		=	Map.GetCustomOption(11);
+	local size_mod 		=	Map.GetCustomOption(12);
+
+	if (map_ratio == 6) then			-- Random
+		map_ratio = 1 + Map.Rand(5, "Random Map Size Ratio Setting");
+	end
+	local map_ratioMultiplierW = 1;
+	local map_ratioMultiplierH = 1;
+	if (map_ratio == 1) then			-- Squared
+		map_ratioMultiplierW = 0.9;
+		map_ratioMultiplierH = 1.1;
+	elseif (map_ratio == 2) then		-- Squarish
+		map_ratioMultiplierW = 0.95;
+		map_ratioMultiplierH = 1.05;
+	elseif (map_ratio == 3) then		-- Rectangular
+		map_ratioMultiplierW = 1;
+		map_ratioMultiplierH = 1;
+	elseif (map_ratio == 4) then		-- Wide Rectangular
+		map_ratioMultiplierW = 1.06;
+		map_ratioMultiplierH = 0.94;
+	elseif (map_ratio == 5) then		-- Rectilinear
+		map_ratioMultiplierW = 1.1;
+		map_ratioMultiplierH = 0.9;
+	else								-- Fallback
+		map_ratioMultiplierW = 1;
+		map_ratioMultiplierH = 1;
+	end
+	print("--");
+	print("--");
+	print("Map Size Ratio modifier: 				", map_ratio, "Width: " .. map_ratioMultiplierW * 100 .. "%, Height: " .. map_ratioMultiplierH * 100 .. "%");
+
 	local size_modMultiplier = 1;	-- Normal size - 100%
 	if (size_mod == 1) then
 		size_modMultiplier = 0.80;	-- Compressed size - 80%
@@ -257,7 +355,7 @@ function GetMapInitData(worldSize)
 	elseif (size_mod == 9) then
 		size_modMultiplier = 1.20;	-- Gigantic size - 120%
 	end
-	print("Map Size modifier: " .. size_modMultiplier * 100 .. "%");
+	print("Map Size modifier:								", size_modMultiplier * 100 .. "%");
 
 	local worldsizes = {
 			[GameInfo.Worlds.WORLDSIZE_DUEL.ID] = {52, 32},
@@ -271,11 +369,13 @@ function GetMapInitData(worldSize)
 	--
 	local world = GameInfo.Worlds[worldSize];
 	if(world ~= nil) then
-		print("Map Size before modifier = Width: " .. grid_size[1] .. ", Height: " .. grid_size[2]);
-		print("Map Size after modifier = Width: " .. grid_size[1] * size_modMultiplier.. ", Height: " .. grid_size[2] * size_modMultiplier);
+		print("Map Size before modifier:				", "Width: " .. grid_size[1] * map_ratioMultiplierW .. ", Height: " .. grid_size[2] * map_ratioMultiplierH);
+		print("Map Size after modifier:					", "Width: " .. (grid_size[1] * map_ratioMultiplierW) * size_modMultiplier.. ", Height: " .. (grid_size[2] * map_ratioMultiplierH) * size_modMultiplier);
+		print("--");
+		print("--");
 	return {
-		Width = grid_size[1] * size_modMultiplier,
-		Height = grid_size[2] * size_modMultiplier,
+		Width = (grid_size[1] * map_ratioMultiplierW) * size_modMultiplier,
+		Height = (grid_size[2] * map_ratioMultiplierH) * size_modMultiplier,
 		WrapX = true,
 	};
     end
@@ -354,10 +454,12 @@ function FractalWorld:GeneratePlotTypes(args)
 	local continents	=	Map.GetCustomOption(8);
 	local land 			=	Map.GetCustomOption(9);
 	local plates_set 	=	Map.GetCustomOption(10);
-	local size_mod 		=	Map.GetCustomOption(11);
-	local ocean_width	=	Map.GetCustomOption(12);
+	--local map_ratio		=	Map.GetCustomOption(11);	-- not used in this function
+	local size_mod 		=	Map.GetCustomOption(12);
+	local ocean_width	=	Map.GetCustomOption(13);
+	local arctic_width	=	Map.GetCustomOption(14);
 
-	local getWorldSize 		=	Map.GetWorldSize();
+	local getWorldSize	=	Map.GetWorldSize();
 
 	skewFactor = { RandomFloat()*2+1, RandomFloat()+1, RandomFloat()+1,  RandomFloat()*6+5, RandomFloat()*3+3, RandomFloat()*2+2,  RandomFloat()*7, RandomFloat()*7, RandomFloat()*7};
 	skewFactor2 = { RandomFloat()*10+5, RandomFloat()*5+5, RandomFloat()*5+3, RandomFloat()*5+3, RandomFloat()*7, RandomFloat()*7, RandomFloat()*7, RandomFloat()*7};
@@ -366,25 +468,26 @@ function FractalWorld:GeneratePlotTypes(args)
 	for row in GameInfo.Worlds() do
 		WorldSizeTypes[row.Type] = row.ID;
 	end
-	local size_modMultiplier = 1;	-- Normal size - 100%
+
+	local size_modMultiplier = 1;		-- Normal size - 100%
 	if (size_mod == 1) then
-		size_modMultiplier = 0.80;	-- Compressed size - 80%
+		size_modMultiplier = 0.80;		-- Compressed size - 80%
 	elseif (size_mod == 2) then
-		size_modMultiplier = 0.85;	-- Squeezed size - 85%
+		size_modMultiplier = 0.85;		-- Squeezed size - 85%
 	elseif (size_mod == 3) then
-		size_modMultiplier = 0.90;	-- Reduced size - 90%
+		size_modMultiplier = 0.90;		-- Reduced size - 90%
 	elseif (size_mod == 4) then
-		size_modMultiplier = 0.95;	-- Smaller size - 95%
+		size_modMultiplier = 0.95;		-- Smaller size - 95%
 	elseif (size_mod == 5) then
-		size_modMultiplier = 1.00;	-- Normal size - 100%
+		size_modMultiplier = 1.00;		-- Normal size - 100%
 	elseif (size_mod == 6) then
-		size_modMultiplier = 1.05;	-- Plus size - 105%
+		size_modMultiplier = 1.05;		-- Plus size - 105%
 	elseif (size_mod == 7) then
-		size_modMultiplier = 1.10;	-- Extra size - 110%
+		size_modMultiplier = 1.10;		-- Extra size - 110%
 	elseif (size_mod == 8) then
-		size_modMultiplier = 1.15;	-- Super size - 115%
+		size_modMultiplier = 1.15;		-- Super size - 115%
 	elseif (size_mod == 9) then
-		size_modMultiplier = 1.20;	-- Gigantic size - 120%
+		size_modMultiplier = 1.20;		-- Gigantic size - 120%
 	end
 
 	local platesSizes = {
@@ -398,10 +501,10 @@ function FractalWorld:GeneratePlotTypes(args)
 	print("Generating Plates");
 
 	numPlates = platesSizes[getWorldSize] or 24;
-	print("Number of plates:", numPlates);
+	print("Number of plates:								", numPlates);
 
 	if (plates_set == 6) then				-- Random
-		plates_set = 1 + Map.Rand(6, "Random Plates Setting");
+		plates_set = 1 + Map.Rand(8, "Random Plates Setting");
 	end
 	if (plates_set == 1) then				-- Few
 		numPlates = (numPlates)/2;
@@ -412,12 +515,12 @@ function FractalWorld:GeneratePlotTypes(args)
 	elseif (plates_set == 4) then			-- Moderate
 		numPlates = (numPlates * 3)/2;
 	elseif (plates_set == 5) then			-- More
-		numPlates = (numPlates * 6)/3;
+		numPlates = (numPlates * 2);
 	else									-- Fallback for Random
 		numPlates = (numPlates * 4)/3;
 	end
 	numPlates = numPlates * size_modMultiplier;
-	print ("Plates Option", plates_set, numPlates);
+	print ("Plates option:										", plates_set, "numPlates: ".. numPlates);
 
 	mapWidth = self.iNumPlotsX;
 	mapHeight = self.iNumPlotsY;
@@ -427,7 +530,7 @@ function FractalWorld:GeneratePlotTypes(args)
 		plates[i] = {};
 		plates[i].x = Map.Rand(mapWidth, "centerX of Plate");
 		plates[i].y = Map.Rand(mapHeight, "centerY of Plate");
-		plates[i].mass = Map.Rand(7, "mass of Plate") + 6;
+		plates[i].mass = Map.Rand(3, "mass of Plate") + 10;
 		plates[i].size = 0;
 		plates[i].terrainType = "?";
 		plates[i].neighbours = {};
@@ -455,8 +558,8 @@ function FractalWorld:GeneratePlotTypes(args)
 
 	for x = 0, mapWidth-1, 1 do
 		for y = 0, mapHeight-1, 1 do
-			currentPlate = partOfPlate(x,y,plates);
-			info = getPlateBoundaryInfo(x, y, plates);
+			currentPlate = PartOfPlate(x,y,plates);
+			info = GetPlateBoundaryInfo(x, y, plates);
 			for infoIndex, thisPlateInfo in ipairs(info) do
 				if (infoIndex ~= currentPlate) then
 					neighbours[currentPlate][infoIndex] = neighbours[currentPlate][infoIndex]+thisPlateInfo;
@@ -520,12 +623,14 @@ function FractalWorld:GeneratePlotTypes(args)
 	print("Calculating Plate Size");
 	for x = 0, mapWidth-1, 1 do
 		for y = 0, mapHeight-1, 1 do
-			local currentPlate = partOfPlate(x, y, plates);
+			local currentPlate = PartOfPlate(x, y, plates);
 			plates[currentPlate].size = plates[currentPlate].size + 1;
 		end
 	end
 
 	print("Calculating Plate Types");
+	print("--");
+	print("--");
 	--
 	oceanAmount = 0;
 	oceanAmountD = 0;
@@ -547,27 +652,28 @@ function FractalWorld:GeneratePlotTypes(args)
 	numIslands = (islandsSizes[getWorldSize] or 0.115) * size_modMultiplier;
 	print ("Islands modifier from world size:", "+" .. numIslands * 100 .. "%");
 
-	if (islands == 6) then				-- Random
-		islands = 2 + Map.Rand(6, "Random Islands Setting");
+	if (islands == 7) then				-- Random
+		islands = 2 + Map.Rand(9, "Random Islands Setting");
 	end
 	local islandsModifier = 0;
 	if (islands == 1) then				-- None
 		islandsModifier = -5;
 	elseif (islands == 2) then			-- Few
-		islandsModifier = -0.2;
+		islandsModifier = -0.3;
 	elseif (islands == 3) then			-- Scattered
-		islandsModifier = -0.1;
+		islandsModifier = -0.15;
 	elseif (islands == 4) then			-- Standard
-		islandsModifier = 0.1;
+		islandsModifier = 0.05;
 	elseif (islands == 5) then			-- More
 		islandsModifier = 0.2;
-	elseif (islands == 5) then			-- Abundant
+	elseif (islands == 6) then			-- Abundant
 		islandsModifier = 0.3;
 	else								-- Fallback for Random
 		islandsModifier = 0.125;
 	end
-	print ("Islands Option", islands);
-	print ("Islands modifier from options:", islandsModifier);
+	print("Islands option:									", islands);
+	print("Islands modifier from options:		", islandsModifier);
+	print("--");
 
 	local landSizes = {
 		[WorldSizeTypes.WORLDSIZE_DUEL]     = 0.225,
@@ -578,10 +684,10 @@ function FractalWorld:GeneratePlotTypes(args)
 		[WorldSizeTypes.WORLDSIZE_HUGE]		= 0.075
 	}
 	numLands = (landSizes[getWorldSize] or 0.15) * size_modMultiplier;
-	print ("Land modifier from world size:", "+" .. numLands * 100 .. "%");
+	print("Land modifier from world size:		", "+" .. numLands * 100 .. "%");
 
 	if (land == 6) then					-- Random
-		land = 1 + Map.Rand(6, "Random Land Setting");
+		land = 1 + Map.Rand(8, "Random Land Setting");
 	end
 	local landModifier = 0;
 	if (land == 1) then					-- Few
@@ -598,17 +704,22 @@ function FractalWorld:GeneratePlotTypes(args)
 		landModifier = 0.15;
 	end
 	landModifier = landModifier + numLands;
-	print ("Land Option", land);
+	print("Land option:											", land);
+	print("--");
 
-	if (continents == 4) then			-- Random
-		continents = 1 + Map.Rand(4, "Random Continents Setting");
+	if (continents == 6) then			-- Random
+		continents = 1 + Map.Rand(8, "Random Continents Setting");
 	end
 	local continents_modifier = 0;
-	if (continents == 1) then			-- Snaky
+	if (continents == 1) then			-- Stringy
 		continents_modifier = -0.45;
-	elseif (continents == 2) then		-- Standard
+	elseif (continents == 2) then		-- Snaky
+		continents_modifier = -0.25;
+	elseif (continents == 3) then		-- Standard
 		continents_modifier = -0.05;
-	elseif (continents == 3) then		-- Blocky
+	elseif (continents == 4) then		-- Chunky
+		continents_modifier = 0.2;
+	elseif (continents == 5) then		-- Blocky
 		continents_modifier = 0.5;
 	else								-- Fallback for Random
 		continents_modifier = -0.15;
@@ -623,47 +734,58 @@ function FractalWorld:GeneratePlotTypes(args)
 		[WorldSizeTypes.WORLDSIZE_HUGE]		= 0.85
 	}
 	numOceans = (oceanSizes[getWorldSize] or 1.15) * size_modMultiplier;
-	print ("Ocean modifier from world size:", numOceans .. " x");
+	print("Ocean modifier from world size:	", numOceans .. " x");
 
 	if (ocean_width == 6) then			-- Random
-		ocean_width = 1 + Map.Rand(6, "Random Ocean Rift Width Setting");
+		ocean_width = 1 + Map.Rand(8, "Random Ocean Rift Width Setting");
+	end
+	if (arctic_width == 6) then			-- Random
+		arctic_width = 1 + Map.Rand(8, "Random Arctic Ocean Width Setting");
 	end
 	local ocean_widthModifierEW = 1;
 	local ocean_widthModifierNS = 1;
 	local ocean_widthModifierREG = 1;
 	if (ocean_width == 1) then			-- Tight
 		ocean_widthModifierEW = 2;
-		ocean_widthModifierNS = 1.25;
 		ocean_widthModifierREG = 1.5;
 	elseif (ocean_width == 2) then		-- Narrow
 		ocean_widthModifierEW = 1.5;
-		ocean_widthModifierNS = 1.1;
 		ocean_widthModifierREG = 1.25;
 	elseif (ocean_width == 3) then		-- Normal
 		ocean_widthModifierEW = 1;
-		ocean_widthModifierNS = 1;
 		ocean_widthModifierREG = 1;
 	elseif (ocean_width == 4) then		-- Wide
 		ocean_widthModifierEW = 0.5;
-		ocean_widthModifierNS = 0.9;
 		ocean_widthModifierREG = 0.75;
 	elseif (ocean_width == 5) then		-- Loose
 		ocean_widthModifierEW = 0.25;
-		ocean_widthModifierNS = 0.75;
 		ocean_widthModifierREG = 0.5;
 	else								-- Fallback for Random
 		ocean_widthModifierEW = 1.25;
-		ocean_widthModifierNS = 1.05;
 		ocean_widthModifierREG = 1.15;
 	end
-	print ("Ocean Rift Width Option", ocean_width, "EW:", (ocean_widthModifierEW * numOceans) * 100 .. "%", "NS:", (ocean_widthModifierNS * numOceans) * 100 .. "%", "REG:", (ocean_widthModifierREG * numOceans) * 100 .. "%");
+	if (arctic_width == 1) then			-- Tight
+		ocean_widthModifierNS = 1.5;
+	elseif (arctic_width == 2) then		-- Narrow
+		ocean_widthModifierNS = 1.25;
+	elseif (arctic_width == 3) then		-- Normal
+		ocean_widthModifierNS = 1;
+	elseif (arctic_width == 4) then		-- Wide
+		ocean_widthModifierNS = 0.75;
+	elseif (arctic_width == 5) then		-- Loose
+		ocean_widthModifierNS = 0.5;
+	else								-- Fallback for Random
+		ocean_widthModifierNS = 1.1;
+	end
+	print("Ocean Rift Width option:					", ocean_width, "EW:", (ocean_widthModifierEW * numOceans) * 100 .. "%", "REG:", (ocean_widthModifierREG * numOceans) * 100 .. "%");
+	print("Arctic Ocean Width option:				", arctic_width, "NS:", (ocean_widthModifierNS * numOceans) * 100 .. "%");
 
 	local oceanEW = (30 * (ocean_widthModifierEW * numOceans));
-	local oceanNS = (30 * (ocean_widthModifierNS * numOceans));
-	local oceanREG = (0.66 * (ocean_widthModifierREG * numOceans));
-	print ("Ocean Rift Width - East-West:	", oceanEW);
-	print ("Ocean Rift Width - North-South:", oceanNS);
-	print ("Ocean Rift Width - Random:		", oceanREG);
+	local oceanNS = (10 * (ocean_widthModifierNS * numOceans));
+	local oceanREG = (0.5 * (ocean_widthModifierREG * numOceans));
+	print("Ocean Rift Width - East-West:		", oceanEW);
+	print("Ocean Rift Width - North-South:	", oceanNS);
+	print("Ocean Rift Width - Random:				", oceanREG);
 
 	for plateIndex, thisPlate in ipairs(plates) do
 		if (thisPlate.neighbours.borders["West"] > oceanEW or thisPlate.neighbours.borders["East"] > oceanEW) then
@@ -711,14 +833,18 @@ function FractalWorld:GeneratePlotTypes(args)
 		--thisPlate.terrainType = "Fractal"
 	end
 	--
-	print("Total amount of ocean:	", (oceanAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
-	print("Amount of deep ocean:  	", (oceanAmountD*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
-	print("Amount of N/S ocean:   	", (oceanAmountNS*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
-	print("Amount of random ocean:	", (oceanAmountREG*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
-	print("Amount of land:        	", (landAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
-	print("Amount of island arc:  	", (arcAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
-	print("Amount of fractal:     	", (fractalAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
-	print("Ocean converted to land:", (spiffiness*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");--]]--
+	print("--");
+	print("--");
+	print("Total amount of ocean:						", (oceanAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
+	print("Amount of deep ocean:						", (oceanAmountD*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
+	print("Amount of N/S ocean:							", (oceanAmountNS*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
+	print("Amount of random ocean:					", (oceanAmountREG*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
+	print("Amount of land:									", (landAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
+	print("Amount of island arc:						", (arcAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
+	print("Amount of fractal:								", (fractalAmount*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");
+	print("Ocean converted to land:					", (spiffiness*100)/(oceanAmount+landAmount+arcAmount+fractalAmount),"%");--]]--
+	print("--");
+	print("--");
 
 	--[[for plateIndex, thisPlate in ipairs(plates) do
 		print("Plate", plateIndex, "Position", thisPlate.x, thisPlate.y, "Mass", thisPlate.mass, "Size", thisPlate.size);
@@ -734,7 +860,7 @@ function FractalWorld:GeneratePlotTypes(args)
 	print("Generating Terrain");
 
 	if (plate_motion == 5) then			-- Random
-		plate_motion = 1 + Map.Rand(5, "Random Plate Motion Setting");
+		plate_motion = 1 + Map.Rand(7, "Random Plate Motion Setting");
 	end
 	local plate_motionModifier = 0;
 	local plate_motionMultiplier = 0;
@@ -752,33 +878,39 @@ function FractalWorld:GeneratePlotTypes(args)
 		plate_motionMultiplier = 3;
 	else								-- Fallback for Random
 		plate_motionModifier = 0.15;
-		plate_motionMultiplier = 1.25;
+		plate_motionMultiplier = 1.5;
 	end
-	print ("Plate Motion Option", plate_motion);
+	print("Plate Motion option:							", plate_motion);
 
-	if (continents == 4) then			-- Random
-		continents = 1 + Map.Rand(4, "Random Continents Setting");
+	if (continents == 6) then			-- Random
+		continents = 1 + Map.Rand(8, "Random Continents Setting");
 	end
 	local continents_modifier1 = 0;
 	local continents_modifier2 = 0;
-	if (continents == 1) then			-- Snaky
+	if (continents == 1) then			-- Stringy
 		continents_modifier1 = -0.15;
 		continents_modifier2 = -0.05;
-	elseif (continents == 2) then		-- Standard
+	elseif (continents == 2) then		-- Snaky
+		continents_modifier1 = -0.075;
+		continents_modifier2 = -0.025;
+	elseif (continents == 3) then		-- Standard
 		continents_modifier1 = 0.0;
 		continents_modifier2 = 0.05;
-	elseif (continents == 3) then		-- Blocky
+	elseif (continents == 4) then		-- Chunky
+		continents_modifier1 = 0.125;
+		continents_modifier2 = 0.075;
+	elseif (continents == 5) then		-- Blocky
 		continents_modifier1 = 0.3;
 		continents_modifier2 = 0.1;
 	else								-- Fallback for Random
 		continents_modifier1 = 0.05;
 		continents_modifier2 = 0.075;
 	end
-	print ("Continents Option", continents);
+	print("Continents option:								", continents);
 
 	local sea_level = Map.GetCustomOption(4);
 	if (sea_level == 6) then			-- Random
-		sea_level = 1 + Map.Rand(6, "Random Sea Level");
+		sea_level = 1 + Map.Rand(8, "Random Sea Level");
 	end
 	local sea_levelModifier = 0;
 	if (sea_level == 1) then			-- Shallow
@@ -794,16 +926,18 @@ function FractalWorld:GeneratePlotTypes(args)
 	else								-- Fallback for Random
 		sea_levelModifier = 0.005;
 	end
-	print ("Sea Level Option", sea_level);
+	print("Sea Level option:								", sea_level);
+	print("--");
+	print("--");
 	--
 	for x = 0, mapWidth-1, 1 do
 		for y = 0, mapHeight-1, 1 do
 			local i = y * self.iNumPlotsX + x;
-			local currentPlate = partOfPlate(x, y, plates);
+			local currentPlate = PartOfPlate(x, y, plates);
 
-			neighbour = adjacentToPlate(x,y,plates);
+			neighbour = AdjacentToPlate(x,y,plates);
 			--neighbour2 = -1;
-			--if (neighbour <= 0) then neighbour2 = oneOff(x,y,plates) end
+			--if (neighbour <= 0) then neighbour2 = OneOff(x,y,plates) end
 			--[[if (neighbour > 0) then
 				boundaryType = plates[currentPlate].neighbours.relativeMotions[neighbour].boundaryType;
 				if (boundaryType == "Collision") then
@@ -824,14 +958,14 @@ function FractalWorld:GeneratePlotTypes(args)
 			elseif (plates[currentPlate].terrainType == "Deep Ocean") then value = -1;
 			elseif (plates[currentPlate].terrainType == "Continental") then
 				value = GetHeight(x,y,1.9+continents_modifier1,0)+0.1+continents_modifier2;
-				if (value < 0 + sea_levelModifier and numAdjacentLandTiles(x,y,1.9+continents_modifier1,0,sea_levelModifier,0.1+continents_modifier2) >= 4) then value = 0.11 end
+				if (value < 0 + sea_levelModifier and NumAdjacentLandTiles(x,y,1.9+continents_modifier1,0,sea_levelModifier,0.1+continents_modifier2) >= 4) then value = 0.11 end
 				--value = 0.01
 			elseif (plates[currentPlate].terrainType == "Island Arcs") then
 				value = GetHeight(x,y,1.4,2)-0.2;
-				if (value > 0 + sea_levelModifier and numAdjacentLandTiles(x,y,1.4,2,sea_levelModifier,-0.2) <= 1) then value = -0.5 end
+				if (value > 0 + sea_levelModifier and NumAdjacentLandTiles(x,y,1.4,2,sea_levelModifier,-0.2) <= 1) then value = -0.5 end
 			elseif (plates[currentPlate].terrainType == "Fractal") then
 				value = GetHeight(x,y,2.0,2)-0.05-sea_levelModifier/2;
-				if (value < 0 + sea_levelModifier and numAdjacentLandTiles(x,y,1.5,1,sea_levelModifier,0.05) >= 3) then value = 0.1 end
+				if (value < 0 + sea_levelModifier and NumAdjacentLandTiles(x,y,1.5,1,sea_levelModifier,0.05) >= 3) then value = 0.1 end
 			else value = 1;
 			end
 
@@ -915,9 +1049,9 @@ function FractalWorld:GeneratePlotTypes(args)
 	for x = 0, mapWidth-1, 1 do
 		for y = 0, mapHeight-1, 1 do
 			local i = y * self.iNumPlotsX + x;
-			if adjacentToPlate(x,y,plates) > 0 then
+			if AdjacentToPlate(x,y,plates) > 0 then
 				self.plotTypes[i] = PlotTypes.PLOT_MOUNTAIN;
-			--elseif oneOff(x,y,plates) > 0 then
+			--elseif OneOff(x,y,plates) > 0 then
 			--	self.plotTypes[i] = PlotTypes.PLOT_HILLS;
 			else
 				self.plotTypes[i] = PlotTypes.PLOT_OCEAN;
@@ -928,7 +1062,7 @@ function FractalWorld:GeneratePlotTypes(args)
 	return self.plotTypes;
 end
 
-function partOfPlate(x, y, plates)
+function PartOfPlate(x, y, plates)
 	if x < 0 then
 		return "West";
 	elseif y < 0 then
@@ -968,10 +1102,10 @@ function partOfPlate(x, y, plates)
 	return nearestPlate;
 end
 
-function adjacentToPlate(x,y,plates)
-	currentPlate = partOfPlate(x,y,plates);
-	if (isAtPlateBoundary(x, y, plates,currentPlate)) then
-		info = getPlateBoundaryInfo(x, y, plates);
+function AdjacentToPlate(x,y,plates)
+	currentPlate = PartOfPlate(x,y,plates);
+	if (IsAtPlateBoundary(x, y, plates,currentPlate)) then
+		info = GetPlateBoundaryInfo(x, y, plates);
 		biggest = 0;
 		biggestIndex = -1;
 		for infoIndex, thisInfo in ipairs(info) do
@@ -986,18 +1120,18 @@ function adjacentToPlate(x,y,plates)
 	end
 end
 
-function oneOff(x,y,plates)
-	if (adjacentToPlate(x,y,plates) ~= -1) then return -1 end
+function OneOff(x,y,plates)
+	if (AdjacentToPlate(x,y,plates) ~= -1) then return -1 end
 
-	currentPlate = partOfPlate(x,y,plates);
+	currentPlate = PartOfPlate(x,y,plates);
 
 	indices = {};
-	indices[1] = adjacentToPlate(x-1+(y%2), y+1,plates);
-	indices[2] = adjacentToPlate(x+(y%2), y+1,plates);
-	indices[3] = adjacentToPlate(x-1, y,plates);
-	indices[4] = adjacentToPlate(x+1, y,plates);
-	indices[5] = adjacentToPlate(x-1+(y%2), y-1,plates);
-	indices[6] = adjacentToPlate(x+(y%2), y-1,plates);
+	indices[1] = AdjacentToPlate(x-1+(y%2), y+1,plates);
+	indices[2] = AdjacentToPlate(x+(y%2), y+1,plates);
+	indices[3] = AdjacentToPlate(x-1, y,plates);
+	indices[4] = AdjacentToPlate(x+1, y,plates);
+	indices[5] = AdjacentToPlate(x-1+(y%2), y-1,plates);
+	indices[6] = AdjacentToPlate(x+(y%2), y-1,plates);
 
 	biggest = -1;
 	for i = 1, 6, 1 do -- Huge hack
@@ -1007,7 +1141,7 @@ function oneOff(x,y,plates)
 	return -1;
 end
 
-function getPlateBoundaryInfo(x, y, plates)
+function GetPlateBoundaryInfo(x, y, plates)
 	local info = {};
 	for plateIndex, thisPlate in ipairs(plates) do
 		info[plateIndex] = 0;
@@ -1017,34 +1151,34 @@ function getPlateBoundaryInfo(x, y, plates)
 	info["East"] = 0;
 	info["North"] = 0;
 
-	local index1 = partOfPlate(x-1+(y%2), y+1,plates);
+	local index1 = PartOfPlate(x-1+(y%2), y+1,plates);
 	if (info[index1] ~= nil) then
 		info[index1] = info[index1]+1;
 	end
-	local index2 = partOfPlate(x+(y%2), y+1,plates);
+	local index2 = PartOfPlate(x+(y%2), y+1,plates);
 	if (info[index2] ~= nil) then
 		info[index2] = info[index2]+1;
 	end
-	local index3 = partOfPlate(x-1, y,plates);
+	local index3 = PartOfPlate(x-1, y,plates);
 	if (info[index3] ~= nil) then
 		info[index3] = info[index3]+1;
 	end
-	local index4 = partOfPlate(x+1, y,plates);
+	local index4 = PartOfPlate(x+1, y,plates);
 	if (info[index4] ~= nil) then
 		info[index4] = info[index4]+1;
 	end
-	local index5 = partOfPlate(x-1+(y%2), y-1,plates);
+	local index5 = PartOfPlate(x-1+(y%2), y-1,plates);
 	if (info[index5] ~= nil) then
 		info[index5] = info[index5]+1;
 	end
-	local index6 = partOfPlate(x+(y%2), y-1,plates);
+	local index6 = PartOfPlate(x+(y%2), y-1,plates);
 	if (info[index6] ~= nil) then
 		info[index6] = info[index6]+1;
 	end
 	return info;
 end
 
-function numAdjacentLandTiles(x, y, n, f, s, d)
+function NumAdjacentLandTiles(x, y, n, f, s, d)
 	if (x <= 0 or y <= 0 or x >= mapWidth-1 or y >= mapHeight-1) then return 0 end
 
 	adjacentLandTiles = 0;
@@ -1076,31 +1210,31 @@ function numAdjacentLandTiles(x, y, n, f, s, d)
 	return adjacentLandTiles;
 end
 
-function isAtPlateBoundary(x, y, plates,currentPlate)
+function IsAtPlateBoundary(x, y, plates,currentPlate)
 
-	if (partOfPlate(x-1+(y%2), y+1,plates) ~= currentPlate) then
+	if (PartOfPlate(x-1+(y%2), y+1,plates) ~= currentPlate) then
 		return true;
 	end
-	if (partOfPlate(x+(y%2), y+1,plates) ~= currentPlate) then
+	if (PartOfPlate(x+(y%2), y+1,plates) ~= currentPlate) then
 		return true;
 	end
-	if (partOfPlate(x-1, y,plates) ~= currentPlate) then
+	if (PartOfPlate(x-1, y,plates) ~= currentPlate) then
 		return true;
 	end
-	if (partOfPlate(x+1, y,plates) ~= currentPlate) then
+	if (PartOfPlate(x+1, y,plates) ~= currentPlate) then
 		return true;
 	end
-	if (partOfPlate(x-1+(y%2), y-1,plates) ~= currentPlate) then
+	if (PartOfPlate(x-1+(y%2), y-1,plates) ~= currentPlate) then
 		return true;
 	end
-	if (partOfPlate(x+(y%2), y-1,plates) ~= currentPlate) then
+	if (PartOfPlate(x+(y%2), y-1,plates) ~= currentPlate) then
 		return true;
 	end
 
 	return false;
 end
 
-function GenerateCoasts(args) 
+function GenerateCoasts(args)
 	print("Setting coasts and oceans (MapGenerator.Lua)");
 	local args = args or {};
 	local bExpandCoasts = args.bExpandCoasts or true;
@@ -1122,7 +1256,7 @@ function GenerateCoasts(args)
 	if bExpandCoasts == false then
 		return
 	end
-	---[[
+	--
 	print("Expanding coasts (MapGenerator.Lua)");
 	for loop, iExpansionDiceroll in ipairs(expansion_diceroll_table) do
 		local shallowWaterPlots = {};
@@ -1159,7 +1293,7 @@ end
 -- MOD -- Slightly lowered amounts of desert, tundra, snow.
 --
 function GenerateTerrain()
-	print("Generating Terrain (Lua Small Continents) ...");
+	print("Generating Terrain (Lua Tectonic) ...");
 
 	-- Get Temperature setting input by user.
 	local temp = Map.GetCustomOption(2)
@@ -1167,14 +1301,39 @@ function GenerateTerrain()
 		temp = 1 + Map.Rand(3, "Random Temperature - Lua");
 	end
 
+	local map_ratio		=	Map.GetCustomOption(11);
+	if (map_ratio == 6) then			-- Random
+		map_ratio = 1 + Map.Rand(5, "Random Map Size Ratio Setting");
+	end
+
+	local fLatitudeChange = 0;
+	if (map_ratio == 1) then			-- Squared
+		fLatitudeChange = 0.05;
+	elseif (map_ratio == 2) then		-- Squarish
+		fLatitudeChange = 0.03;
+	elseif (map_ratio == 3) then		-- Rectangular
+		fLatitudeChange = 0;
+	elseif (map_ratio == 4) then		-- Wide Rectangular
+		fLatitudeChange = -0.03;
+	elseif (map_ratio == 5) then		-- Rectilinear
+		fLatitudeChange = -0.05;
+	else								-- Fallback
+		fLatitudeChange = 0;
+	end
+
+	print("--");
+	print("Map Size Ratio option: 				", map_ratio);
+	print("Latitude change because of ratio:", fLatitudeChange);
+	print("--");
+
 	local args = {
 		temperature = temp,
 		grain_amount = 3,
 		iDesertPercent = 40,
-		fSnowLatitude = 0.82,
-		fTundraLatitude = 0.6,
-		fDesertBottomLatitude =	0.33,
-		fDesertTopLatitude = 0.45
+		fSnowLatitude = 0.82 + fLatitudeChange,
+		fTundraLatitude = 0.6 + fLatitudeChange,
+		fDesertBottomLatitude =	0.28 + fLatitudeChange,
+		fDesertTopLatitude = 0.42 + fLatitudeChange
 		};
 	local terraingen = TerrainGenerator.Create(args);
 
@@ -1229,7 +1388,7 @@ function AddFeatures()
 		iJungleFactor = 6,
 		iJunglePercent = 67,
 		iForestPercent = 45,
-		fMarshPercent = 20,
+		fMarshPercent = 18,
 		iOasisPercent = 15
 		};
 	local featuregen = FeatureGenerator.Create(args);
@@ -1243,16 +1402,63 @@ function StartPlotSystem()
 	-- Get Resources setting input by user.
 	local res = Map.GetCustomOption(5)
 	if res == 6 then
-		res = 1 + Map.Rand(3, "Random Resources Option - Lua");
+		res = 1 + Map.Rand(5, "Random Resources Option - Lua");
 	end
 
 	print("Creating start plot database.");
 	local start_plot_database = AssignStartingPlots.Create()
 
+	local startPlacement = Map.GetCustomOption(14)
+	local divMethod = nil
+	if startPlacement == 4 then
+		divMethod = 1 + Map.Rand(3, "Random Start Placement");
+	end
+	if startPlacement == 1 then			-- Biggest Landmass
+		divMethod = 1
+	elseif startPlacement == 2 then		-- Any Continents
+		divMethod = 2
+	else								-- Start Anywhere
+		divMethod = 3
+	end
+
+	local largestLand = Map.FindBiggestArea(false)
+	if startPlacement == 1 then
+		-- Biggest Landmass placement
+		if largestLand:GetNumTiles() < 0.25 * Map.GetLandPlots() then
+			print("AI Map Strategy - Offshore expansion with navy bias")
+			-- Tell the AI that we should treat this as a offshore expansion map with naval bias
+			Map.ChangeAIMapHint(4+1)
+		else
+			print("AI Map Strategy - Offshore expansion")
+			-- Tell the AI that we should treat this as a offshore expansion map
+			Map.ChangeAIMapHint(4)
+		end
+	elseif startPlacement == 2 then
+		-- Any Continents placement
+		if largestLand:GetNumTiles() < 0.25 * Map.GetLandPlots() then
+			print("AI Map Strategy - Offshore expansion with navy bias")
+			-- Tell the AI that we should treat this as a offshore expansion map with naval bias
+			Map.ChangeAIMapHint(4+1)
+		else
+			print("AI Map Strategy - Normal")
+		end
+	elseif startPlacement == 3 then
+		-- Start Anywhere placement
+		if largestLand:GetNumTiles() < 0.25 * Map.GetLandPlots() then
+			print("AI Map Strategy - Navy bias")
+			-- Tell the AI that we should treat this as a map with naval bias
+			Map.ChangeAIMapHint(1)
+		else
+			print("AI Map Strategy - Normal")
+		end
+	else
+		print("AI Map Strategy - Normal")
+	end
+
 	print("Dividing the map in to Regions.");
 	-- Regional Division Method 2: Continental
 	local args = {
-		method = 2,
+		method = divMethod,
 		resources = res,
 		};
 	start_plot_database:GenerateRegions(args)

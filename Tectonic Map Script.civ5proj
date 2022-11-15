@@ -5,7 +5,7 @@
     <ProjectGuid>{efbe91cf-8dfd-4fd2-bf84-900c9422d533}</ProjectGuid>
     <Name>Tectonic Map Script</Name>
     <Guid>ba57b38a-e66d-4bcc-91f4-94a1d73f2a62</Guid>
-    <ModVersion>5</ModVersion>
+    <ModVersion>6</ModVersion>
     <Stability>Stable</Stability>
     <Teaser>An extremely random map based on global tectonics.</Teaser>
     <Description>Generates a map based on global tectonics.
@@ -13,12 +13,16 @@
 [NEWLINE]Works best on relatively large maps (Map size options are equivalent to Terra maps).
 [NEWLINE]
 [NEWLINE]Custom options:
+[NEWLINE][ICON_BULLET]Map Ratio
+[NEWLINE]Choose the map ratio that you prefer. From proportionally squared for compact expansion, to wide rectangular map for far away expansion.
 [NEWLINE][ICON_BULLET]Size Modifier
-[NEWLINE]Alter the map slightly by applying a size modifier to it.
+[NEWLINE]Alter the map size result by applying a size modifier to it.
 [NEWLINE][ICON_BULLET]Sea Level
 [NEWLINE]Changes the height of the water rather than the amount of ocean.
-[NEWLINE][ICON_BULLET]Ocean Rift Width
-[NEWLINE]Adjust the width of ocean rifts and impassable rift at the edge of the map.
+[NEWLINE][ICON_BULLET]Rift Width
+[NEWLINE]Adjust the width of ocean rifts between plates and impassable rift at the easternmost and westernmost edge of the map.
+[NEWLINE][ICON_BULLET]Arctic Ocean Width
+[NEWLINE]Adjust the width of arctic ocean rifts at the northernmost and southernmost edge of the map.
 [NEWLINE][ICON_BULLET]Plate Motion
 [NEWLINE]Alters the prominence of mountain belts and rifts. Faster plate motion means higher mountain ranges and deeper ocean rifts.
 [NEWLINE][ICON_BULLET]Continents
@@ -27,11 +31,15 @@
 [NEWLINE]Changes the amount of land on the map by altering the number of oceanic plates.
 [NEWLINE][ICON_BULLET]Plates
 [NEWLINE]Affects the number of tectonic plates that will be used in map generation. More plates will result in smaller land masses and more intricate structures.
+[NEWLINE][ICON_BULLET]Force Coastal Start
+[NEWLINE]Force every civilization to start on coast.
+[NEWLINE][ICON_BULLET]Start Placement
+[NEWLINE]Choose the regional division method that affects start placement for major civilizations and how AI will behave to the map..
 [NEWLINE]
 [NEWLINE]
 [NEWLINE]A (very) small part of the code is based on Small Continents Deluxe (v 100) by James Barrows.
 [NEWLINE]
-[NEWLINE]Version 5 (V) is a modification fork by N.Core</Description>
+[NEWLINE]Version 6 (VI) is a modification fork by N.Core</Description>
     <Authors>Haftetavenscrap, N.Core</Authors>
     <SpecialThanks>
     </SpecialThanks>
