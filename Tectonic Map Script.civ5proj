@@ -23,6 +23,8 @@
 [NEWLINE]Adjust the width of ocean rifts between plates and impassable rift at the easternmost and westernmost edge of the map.
 [NEWLINE][ICON_BULLET]Arctic Ocean Width
 [NEWLINE]Adjust the width of arctic ocean rifts at the northernmost and southernmost edge of the map.
+[NEWLINE][ICON_BULLET]Islands
+[NEWLINE]Adjust the amount of occurrence for islands generation.
 [NEWLINE][ICON_BULLET]Plate Motion
 [NEWLINE]Alters the prominence of mountain belts and rifts. Faster plate motion means higher mountain ranges and deeper ocean rifts.
 [NEWLINE][ICON_BULLET]Continents
@@ -34,7 +36,7 @@
 [NEWLINE][ICON_BULLET]Force Coastal Start
 [NEWLINE]Force every civilization to start on coast.
 [NEWLINE][ICON_BULLET]Start Placement
-[NEWLINE]Choose the regional division method that affects start placement for major civilizations and how AI will behave to the map..
+[NEWLINE]Choose the regional division method that affects start placement for major civilizations and how AI will behave to the map.
 [NEWLINE]
 [NEWLINE]
 [NEWLINE]A (very) small part of the code is based on Small Continents Deluxe (v 100) by James Barrows.
