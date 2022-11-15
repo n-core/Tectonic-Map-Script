@@ -6,8 +6,8 @@
 - Haftetavenscrap		- Original creator of the map script
   (Jibbles on Steam)
 - James Barrows			- A (very) small part of the code is based on Small Continents Deluxe (v 100)
-- N.Core				- Added size modifier, ocean rift width option, start placement method,
-						  more options for existing custom options for gradual adjustment,
+- N.Core				- Added map ratio selector, size modifier, rift width option, arctic ocean width option,
+						  start placement method, more options for existing custom options for gradual adjustment,
 						  balancing the map to be kinder to smaller sizes by generate more land and fewer islands,
 						  and the opposite for larger sizes.
 
@@ -322,8 +322,8 @@ function GetMapInitData(worldSize)
 		map_ratioMultiplierW = 1;
 		map_ratioMultiplierH = 1;
 	elseif (map_ratio == 4) then		-- Wide Rectangular
-		map_ratioMultiplierW = 1.06;
-		map_ratioMultiplierH = 0.94;
+		map_ratioMultiplierW = 1.05;
+		map_ratioMultiplierH = 0.95;
 	elseif (map_ratio == 5) then		-- Rectilinear
 		map_ratioMultiplierW = 1.1;
 		map_ratioMultiplierH = 0.9;
@@ -1322,7 +1322,7 @@ function GenerateTerrain()
 	end
 
 	print("--");
-	print("Map Size Ratio option: 				", map_ratio);
+	print("Map Size Ratio option: 					", map_ratio);
 	print("Latitude change because of ratio:", fLatitudeChange);
 	print("--");
 
