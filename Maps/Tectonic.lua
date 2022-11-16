@@ -1408,7 +1408,7 @@ function StartPlotSystem()
 	print("Creating start plot database.");
 	local start_plot_database = AssignStartingPlots.Create()
 
-	local startPlacement = Map.GetCustomOption(14)
+	local startPlacement = Map.GetCustomOption(16)
 	local divMethod = nil
 	if startPlacement == 4 then
 		divMethod = 1 + Map.Rand(3, "Random Start Placement");
@@ -1417,9 +1417,12 @@ function StartPlotSystem()
 		divMethod = 1
 	elseif startPlacement == 2 then		-- Any Continents
 		divMethod = 2
-	else								-- Start Anywhere
+	elseif startPlacement == 3 then		-- Start Anywhere
 		divMethod = 3
+	else								-- Fallback
+		divMethod = 2
 	end
+	print("Start placement method:						", startPlacement);
 
 	local largestLand = Map.FindBiggestArea(false)
 	if startPlacement == 1 then
@@ -1465,7 +1468,7 @@ function StartPlotSystem()
 
 	print("Choosing start locations for civilizations.");
 	-- Forcing starts along the ocean.
-	local coastalStarts = Map.GetCustomOption(13);
+	local coastalStarts = Map.GetCustomOption(15);
 	if coastalStarts == 3 then
 		coastalStarts = 1 + Map.Rand(2, "Random Coastal Starts");
 	end
