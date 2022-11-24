@@ -9,11 +9,17 @@
 			<Text>An extremely random world based on global tectonics.</Text>
 		</Replace>
 		<!-- Map option category -->
+		<Replace Tag="TXT_KEY_MAP_OPTION_MAP_RATIO">
+			<Text>Map Ratio</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_MAP_RATIO_HELP">
+			<Text>Choose the map ratio that you prefer. From proportionally squared for compact expansion, to wide rectangular map for far away expansion.</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_MODIFIER">
 			<Text>Size Modifier</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_MODIFIER_HELP">
-			<Text>Alter the map slightly by applying a size modifier to it.</Text>
+			<Text>Alter the map size result by applying a size modifier to it.</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SEA_LEVEL_HELP_TECTONIC">
 			<Text>With Tectonic, Sea Level changes the height of the water rather than the amount of ocean.</Text>
@@ -67,9 +73,24 @@
 			<Text>Start Placement</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_START_PLACEMENT_HELP">
-			<Text>Choose the regional division method that affects start placement for major civilizations.</Text>
+			<Text>Choose the regional division method that affects start placement for major civilizations and how AI will behave to the map.</Text>
 		</Replace>
 		<!-- Map options -->
+		<Replace Tag="TXT_KEY_MAP_OPTION_SQUARED">
+			<Text>Squared</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_SQUARISH">
+			<Text>Squarish</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_RECTANGULAR">
+			<Text>Rectangular</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_WIDE_RECTANGULAR">
+			<Text>Wide Rectangular</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MAP_OPTION_RECTILINEAR">
+			<Text>Rectilinear</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_MAP_OPTION_SIZE_80">
 			<Text>Compressed - 80%</Text>
 		</Replace>

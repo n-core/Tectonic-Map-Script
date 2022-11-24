@@ -103,6 +103,7 @@ function GetCoreMapOptions()
 			"TXT_KEY_MAP_OPTION_SIZE_110",
 			"TXT_KEY_MAP_OPTION_SIZE_115",
 			"TXT_KEY_MAP_OPTION_SIZE_120",
+			"TXT_KEY_MAP_OPTION_RANDOM",
 		},
 		DefaultValue = 5,
 		SortPriority = -98,
@@ -335,6 +336,9 @@ function GetMapInitData(worldSize)
 	print("--");
 	print("Map Size Ratio modifier: 				", map_ratio, "Width: " .. map_ratioMultiplierW * 100 .. "%, Height: " .. map_ratioMultiplierH * 100 .. "%");
 
+	if (size_mod == 10) then			-- Random
+		size_mod = 1 + Map.Rand(9, "Random Size Modifier Setting");
+	end
 	local size_modMultiplier = 1;	-- Normal size - 100%
 	if (size_mod == 1) then
 		size_modMultiplier = 0.80;	-- Compressed size - 80%
@@ -469,6 +473,9 @@ function FractalWorld:GeneratePlotTypes(args)
 		WorldSizeTypes[row.Type] = row.ID;
 	end
 
+	if (size_mod == 10) then			-- Random
+		size_mod = 1 + Map.Rand(9, "Random Size Modifier Setting");
+	end
 	local size_modMultiplier = 1;		-- Normal size - 100%
 	if (size_mod == 1) then
 		size_modMultiplier = 0.80;		-- Compressed size - 80%
